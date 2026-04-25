@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /**
- * 按需求关键词匹配 SKILL/recipe — wrapper for @cogmap/core/match-recipe
+ * 按需求关键词匹配 SKILL/recipe — wrapper for cogmap-core/match-recipe
  *
  * 用法:
  *   node scripts/match-recipe.mjs "<需求描述>"
  *   node scripts/match-recipe.mjs --list
  */
 
-import { matchRecipe, listRecipes } from '@cogmap/core/match-recipe'
+import { matchRecipe, listRecipes } from 'cogmap-core/match-recipe'
 
 const args = process.argv.slice(2)
 

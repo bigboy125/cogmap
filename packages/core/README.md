@@ -1,4 +1,4 @@
-# @cogmap/core
+# cogmap-core
 
 CogMap 协议核心包。提供：
 
@@ -11,7 +11,7 @@ CogMap 协议核心包。提供：
 ## 安装
 
 ```bash
-npm install @cogmap/core
+npm install cogmap-core
 ```
 
 ## 配置
@@ -34,7 +34,7 @@ export COGMAP_API_KEY=your-admin-key
 ## 用法
 
 ```js
-import { getIntel, putIntel, patchRoadmap, searchByTask } from '@cogmap/core'
+import { getIntel, putIntel, patchRoadmap, searchByTask } from 'cogmap-core'
 
 // 读 INTEL
 const intel = await getIntel()

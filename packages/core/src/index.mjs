@@ -1,5 +1,5 @@
 /**
- * @cogmap/core — CogMap 协议核心包入口
+ * cogmap-core — CogMap 协议核心包入口
  *
  * 通用导出:
  *   - map-client: getIntel / putIntel / patchRoadmap / searchByTask

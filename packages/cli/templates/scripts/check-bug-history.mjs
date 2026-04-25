@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 /**
- * 历史 bug 全文检索 — wrapper for @cogmap/core/check-bug-history
+ * 历史 bug 全文检索 — wrapper for cogmap-core/check-bug-history
  *
  * 用法:
  *   node scripts/check-bug-history.mjs <关键词1> <关键词2> ...
  */
 
-import { checkBugHistory } from '@cogmap/core/check-bug-history'
+import { checkBugHistory } from 'cogmap-core/check-bug-history'
 
 const keywords = process.argv.slice(2)
 if (keywords.length === 0) {

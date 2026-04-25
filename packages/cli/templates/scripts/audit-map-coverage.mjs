@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * CogMap 覆盖率审计 — wrapper for @cogmap/core/audit
+ * CogMap 覆盖率审计 — wrapper for cogmap-core/audit
  *
  * 用法:
  *   node scripts/audit-map-coverage.mjs
@@ -12,7 +12,7 @@
  *   1 = 覆盖率未达标 (CI/Stop hook 用)
  */
 
-import { auditCoverage } from '@cogmap/core/audit'
+import { auditCoverage } from 'cogmap-core/audit'
 import fs from 'node:fs'
 import path from 'node:path'
 

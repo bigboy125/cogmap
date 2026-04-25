@@ -7,7 +7,7 @@
  * SessionStart hook 会自动调用本脚本
  */
 
-import { getIntel } from '@cogmap/core'
+import { getIntel } from 'cogmap-core'
 import fs from 'node:fs'
 import path from 'node:path'
 

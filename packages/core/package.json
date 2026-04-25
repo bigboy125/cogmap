@@ -1,5 +1,5 @@
 {
-  "name": "@cogmap/core",
+  "name": "cogmap-core",
   "version": "0.1.0",
   "description": "CogMap 协议核心 — INTEL HTTPS 客户端 + JSON Schema + audit/validate 工具",
   "type": "module",

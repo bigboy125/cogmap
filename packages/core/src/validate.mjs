@@ -2,7 +2,7 @@
  * INTEL 结构 schema 校验
  *
  * 用法:
- *   import { validateIntel } from '@cogmap/core/validate'
+ *   import { validateIntel } from 'cogmap-core/validate'
  *   const result = await validateIntel()  // 拉远端 INTEL 校验
  *   const result = await validateIntel(localIntel)  // 校验本地对象
  */

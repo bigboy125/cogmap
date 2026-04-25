@@ -4,7 +4,7 @@
  * 检查项目中的 lessons / bugs / iterations 是否上图 INTEL
  *
  * 用法:
- *   import { auditCoverage } from '@cogmap/core/audit'
+ *   import { auditCoverage } from 'cogmap-core/audit'
  *   const r = await auditCoverage({ memoryDir: './memory' })
  *   if (r.coverage < 0.9) process.exit(1)
  */

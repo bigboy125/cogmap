@@ -90,7 +90,7 @@ export async function runInit({ dir, args = [] }) {
             'match-recipe': 'node scripts/match-recipe.mjs'
           },
           dependencies: {
-            '@cogmap/core': '^0.1.0'
+            'cogmap-core': '^0.1.0'
           }
         },
         null,
@@ -141,7 +141,7 @@ export async function runInit({ dir, args = [] }) {
 
 Next steps:
   cd ${path.relative(process.cwd(), dir) || '.'}
-  npm install                              # 安装 @cogmap/core
+  npm install                              # 安装 cogmap-core
   export COGMAP_API_KEY=your-key           # 配置凭据
   # 然后在 Claude Code / Cursor 打开项目, SessionStart 会自动拉 INTEL
 

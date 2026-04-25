@@ -26,17 +26,17 @@ my-project/
 │   └── skills/                    # 项目 SKILL.md 目录
 │       └── .gitkeep
 ├── scripts/
-│   ├── audit-map-coverage.mjs    # 用 @cogmap/core/audit
-│   ├── validate-intel.mjs         # 用 @cogmap/core/validate
-│   ├── match-recipe.mjs           # 用 @cogmap/core/match-recipe
-│   ├── check-bug-history.mjs      # 用 @cogmap/core/check-bug-history
+│   ├── audit-map-coverage.mjs    # 用 cogmap-core/audit
+│   ├── validate-intel.mjs         # 用 cogmap-core/validate
+│   ├── match-recipe.mjs           # 用 cogmap-core/match-recipe
+│   ├── check-bug-history.mjs      # 用 cogmap-core/check-bug-history
 │   └── sync-intel-to-claude-md.mjs
 ├── INTEL.json                     # 初始 INTEL 数据
 ├── .cogmap.json                   # 项目 CogMap 配置(api_base 等)
 ├── CLAUDE.md                      # 项目 AI 指令文件 (auto-generated)
 ├── .gitignore                     # 含 CLAUDE.md 等 cogmap 内部文件
 ├── cogmap-explainer.html          # 对外说明文档
-└── package.json                   # 含 @cogmap/core 依赖
+└── package.json                   # 含 cogmap-core 依赖
 ```
 
 ## 命令

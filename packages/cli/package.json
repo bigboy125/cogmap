@@ -29,6 +29,6 @@
     "node": ">=18"
   },
   "dependencies": {
-    "@cogmap/core": "^0.1.0"
+    "cogmap-core": "^0.1.0"
   }
 }
