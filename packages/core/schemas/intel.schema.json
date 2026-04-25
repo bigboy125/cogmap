@@ -1,0 +1,143 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cogmap.dev/schemas/intel.schema.json",
+  "title": "CogMap INTEL",
+  "description": "CogMap 协议主数据结构 — 跨 AI 跨工具的项目记忆数据库",
+  "type": "object",
+  "required": ["_schema_version", "rules"],
+  "properties": {
+    "_schema_version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "协议 schema 版本, 当前 v2"
+    },
+    "rules": {
+      "type": "array",
+      "description": "项目硬规则, 写代码必须遵守",
+      "items": {
+        "type": "object",
+        "required": ["text"],
+        "properties": {
+          "text": { "type": "string", "minLength": 1 },
+          "critical": { "type": "boolean", "default": false },
+          "applies_to": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "适用范围, 如 ['frontend','backend','all']"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "lessons": {
+      "type": "object",
+      "description": "按节点 ID 索引的经验教训",
+      "additionalProperties": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    },
+    "bugs": {
+      "type": "object",
+      "description": "按节点 ID 索引的 bug 历史",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "types": { "type": "array", "items": { "type": "string" } },
+          "count": { "type": "integer", "minimum": 0 },
+          "lessons": { "type": "array", "items": { "type": "string" } }
+        },
+        "additionalProperties": true
+      }
+    },
+    "iterations": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "date": { "type": "string" },
+            "summary": { "type": "string" },
+            "version": { "type": "string" }
+          }
+        }
+      }
+    },
+    "guide": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    },
+    "recipes": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/recipe" }
+    },
+    "roadmap": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/roadmapItem" }
+    },
+    "session_handoff": {
+      "type": "object",
+      "description": "会话交接信息, 新对话第一动作必读",
+      "additionalProperties": true
+    },
+    "app_meta": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "timeline": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ts": { "type": "string" },
+          "kind": { "type": "string" },
+          "summary": { "type": "string" }
+        }
+      }
+    }
+  },
+  "additionalProperties": true,
+  "definitions": {
+    "recipe": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+        "scenario": { "type": "string" },
+        "triggers": { "type": "array", "items": { "type": "string" } },
+        "files": { "type": "array", "items": { "type": "string" } },
+        "steps": { "type": "array", "items": { "type": "string" } },
+        "tests": { "type": "array", "items": { "type": "string" } },
+        "acceptance_criteria": { "type": "array", "items": { "type": "string" } },
+        "unit_tests": { "type": "array", "items": { "type": "string" } },
+        "deploy": { "type": "string" },
+        "confidence": { "type": "string" },
+        "estimatedTime": { "type": "string" },
+        "lessons_to_obey": { "type": "array", "items": { "type": "string" } },
+        "skill_path": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "roadmapItem": {
+      "type": "object",
+      "required": ["id", "title", "status"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[A-Z]+\\d+$" },
+        "category": { "type": "string" },
+        "title": { "type": "string" },
+        "priority": { "type": "string", "enum": ["p0", "p1", "p2", "p3"] },
+        "status": {
+          "type": "string",
+          "enum": ["proposed", "in_progress", "done", "blocked", "rejected"]
+        },
+        "completed_at": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "additionalProperties": true
+    }
+  }
+}

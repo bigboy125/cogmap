@@ -1,0 +1,30 @@
+{
+  "name": "cogmap",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CogMap — AI 协作工程化方法论开放协议 (monorepo)",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "node --test packages/core/test",
+    "lint": "echo 'no linter yet'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bigboy125/cogmap.git"
+  },
+  "keywords": [
+    "ai",
+    "claude",
+    "coding-agent",
+    "skills",
+    "methodology",
+    "project-memory"
+  ],
+  "author": "bigboy125",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
+}

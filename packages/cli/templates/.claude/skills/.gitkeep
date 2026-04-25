@@ -1,0 +1,13 @@
+# CogMap Skills directory
+#
+# 在这里放项目特定的 SKILL.md 文件,如:
+#   .claude/skills/add-feature-x/SKILL.md
+#   .claude/skills/fix-bug-y/SKILL.md
+#
+# 每个 SKILL.md 必须有 YAML frontmatter:
+# ---
+# name: <skill-id>
+# description: <触发条件描述>
+# ---
+#
+# 详见 https://github.com/bigboy125/cogmap

@@ -1,0 +1,15 @@
+node_modules/
+.DS_Store
+*.local
+.env
+.env.*
+!.env.example
+dist/
+.vercel
+.npmrc
+*.log
+coverage/
+
+# CogMap auto-injected files
+CLAUDE.md
+.cogmap-cache/

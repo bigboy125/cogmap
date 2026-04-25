@@ -1,0 +1,19 @@
+node_modules/
+.DS_Store
+.env
+.env.*
+!.env.example
+dist/
+*.log
+coverage/
+
+# CogMap 自动生成
+# CLAUDE.md 由 SessionStart hook 注入 git context, 每对话变, 不入 git
+CLAUDE.md
+
+# 凭据 (不要提交!)
+.cogmap-credentials.json
+.cogmap.local.json
+
+# 临时缓存
+.cogmap-cache/

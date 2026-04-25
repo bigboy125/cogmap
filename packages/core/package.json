@@ -1,0 +1,44 @@
+{
+  "name": "@cogmap/core",
+  "version": "0.1.0",
+  "description": "CogMap 协议核心 — INTEL HTTPS 客户端 + JSON Schema + audit/validate 工具",
+  "type": "module",
+  "main": "./src/index.mjs",
+  "exports": {
+    ".": "./src/index.mjs",
+    "./map-client": "./src/map-client.mjs",
+    "./audit": "./src/audit.mjs",
+    "./validate": "./src/validate.mjs",
+    "./match-recipe": "./src/match-recipe.mjs",
+    "./check-bug-history": "./src/check-bug-history.mjs",
+    "./schemas/intel": "./schemas/intel.schema.json"
+  },
+  "files": [
+    "src",
+    "schemas",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node --test test/"
+  },
+  "keywords": [
+    "cogmap",
+    "intel",
+    "ai-memory",
+    "claude",
+    "json-schema"
+  ],
+  "author": "bigboy125",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bigboy125/cogmap.git",
+    "directory": "packages/core"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "_schema_version": 2,
+  "_doc": "本文件是 INTEL 初始模板。真实 INTEL 由 HTTPS API (.cogmap.json 配置的 api_base) 服务。这份 JSON 仅在没有后端时作为只读 fallback 用。",
+  "rules": [
+    {
+      "text": "【R1 交付前必须 E2E 自测】部署后必须用 chrome MCP 实测目标功能、量化验证才算完成；仅构建/lint/检查脚本通过不算",
+      "critical": true
+    },
+    {
+      "text": "【R2 grep 验证】CSS 选择器、JS 函数名、API 路径，写之前必须 grep 一次确认存在；禁止凭记忆",
+      "critical": true
+    },
+    {
+      "text": "【R5 模糊指令先探查】用户说\"X 有问题\"必须先打开实物列具体痛点，不要直接跳方案",
+      "critical": false
+    },
+    {
+      "text": "【R6 测试三维覆盖】测试必须覆盖 路径×视口×主题/语言 至少 5 组合；弹窗必须真点开测",
+      "critical": true
+    },
+    {
+      "text": "【R7 任务结束前 git status 自查】每次任务收尾必须 git status，所有 modified 的 tracked 文件要么一起 commit 要么明确告知用户",
+      "critical": true
+    },
+    {
+      "text": "【R8 验证终点用户可见】MCP/hook/settings 类改动,验证终点 = 用户重启后真能看到 tool 名,不是脚本能跑",
+      "critical": true
+    },
+    {
+      "text": "【R9 memory 引用前 grep 验证】reference memory 做关键决策前必须 grep / 实测验证一次实际配置",
+      "critical": true
+    },
+    {
+      "text": "【R10 主对话调度规范】主对话不亲自写代码,所有实现派 subagent (Agent tool + isolation:worktree); 主对话只做读 SKILL → 派活 → 汇总 → 让用户审",
+      "critical": true
+    },
+    {
+      "text": "【R11 双重独立 review】subagent 写完代码后, 必须再派 2 个独立 subagent 各自做 spec 合规审查 + 代码质量审查",
+      "critical": true
+    },
+    {
+      "text": "【R12 SKILL 优先于 recipe】.claude/skills/<id>/SKILL.md 存在则必须按 SKILL 五步流程做(复述+AC+极具体计划+TDD+实现)",
+      "critical": true
+    },
+    {
+      "text": "【R20 每对话沉淀闭环】每个对话必须 入(SessionStart fetch INTEL) → 干 → 沉淀 → 回灌(PUT 新教训到 INTEL)",
+      "critical": true
+    },
+    {
+      "text": "【需求自动出方案+测试用例】用户提需求后第一步必须探查 3 来源(本地 grep + INTEL 节点 lessons/bugs + git log -5)→ 产出方案 + 测试用例给用户 review,确认后才动手",
+      "critical": true
+    }
+  ],
+  "lessons": {},
+  "bugs": {},
+  "iterations": {},
+  "guide": {},
+  "recipes": [],
+  "roadmap": [
+    {
+      "id": "P1",
+      "category": "setup",
+      "title": "项目 CogMap 初始化",
+      "priority": "p0",
+      "status": "done",
+      "completed_at": "{{DATE}}",
+      "notes": "由 create-cogmap CLI 自动生成"
+    }
+  ]
+}
