@@ -52,17 +52,8 @@
     },
     "iterations": {
       "type": "object",
-      "additionalProperties": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "properties": {
-            "date": { "type": "string" },
-            "summary": { "type": "string" },
-            "version": { "type": "string" }
-          }
-        }
-      }
+      "description": "按节点 ID 索引的迭代历史 (实际数据多样, 可能是 array of {date,summary,version}, 也可能是 object 结构, 兼容)",
+      "additionalProperties": true
     },
     "guide": {
       "type": "object",
