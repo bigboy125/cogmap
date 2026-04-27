@@ -18,3 +18,6 @@ coverage/
 
 # Claude Code v2.1.49+ 原生 worktree (临时工作树, 不入主 repo, R13)
 .claude/worktrees/
+
+# 本地归档 — cogmap/交互地图历史文档(含仁珍千宝项目隐私), 不推公开 repo
+archive/
