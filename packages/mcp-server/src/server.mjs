@@ -55,12 +55,19 @@ const TOOLS = [
   {
     name: 'cogmap_search_by_task',
     description:
-      '按关键词检索 INTEL 相关切片 (rules / lessons / bugs / recipes). 比 get_intel 更省 token, 只返回相关节点. 在 file:// 模式下做客户端 OR 检索.',
+      '按关键词检索 INTEL 相关切片 (rules / lessons / bugs / recipes). 比 get_intel 更省 token, 只返回相关节点. 在 file:// 模式下做客户端 OR 检索. 可选 slim/limit/fields 进一步压缩 token.',
     inputSchema: {
       type: 'object',
       required: ['query'],
       properties: {
-        query: { type: 'string', description: '检索关键词,例如 "日历" / "深色模式" / "iOS"' }
+        query: { type: 'string', description: '检索关键词,例如 "日历" / "深色模式" / "iOS"' },
+        slim: { type: 'boolean', description: 'recipe 只返回头部决策字段 (id/scenario/triggers/confidence/skill_path), 省 token. 默认 false.' },
+        limit: { type: 'integer', description: '每个类别最多返回几条. 默认无上限.', minimum: 1 },
+        fields: {
+          type: 'array',
+          items: { type: 'string', enum: ['rules', 'lessons', 'bugs', 'recipes'] },
+          description: '只返回这些类别. 默认全部.'
+        }
       }
     }
   },
@@ -127,8 +134,10 @@ async function callTool(name, args) {
   switch (name) {
     case 'cogmap_get_intel':
       return await getIntel(args.path || null)
-    case 'cogmap_search_by_task':
-      return await searchByTask(args.query)
+    case 'cogmap_search_by_task': {
+      const { query, slim, limit, fields } = args
+      return await searchByTask(query, { slim, limit, fields })
+    }
     case 'cogmap_check_bug_history':
       return await checkBugHistory(...(args.keywords || []))
     case 'cogmap_match_recipe':

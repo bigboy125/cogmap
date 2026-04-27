@@ -2,6 +2,23 @@
 
 ## [Unreleased]
 
+### `cogmap-core` API 扩展
+
+- **`searchByTask(query, opts)` Q6 token 切片优化**: 新增 3 个可选参数, 默认行为保持兼容
+  - `slim: true` — recipe 只返回头部决策字段 (id/scenario/triggers/confidence/skill_path/estimatedTime), 省 token
+  - `limit: number` — 每个类别最多返回几条, 防爆量
+  - `fields: string[]` — 只返回指定类别 (rules/lessons/bugs/recipes), 默认全部
+  - HTTPS 模式把这些作为 query param 传后端, 后端可选实现
+  - 3 个 smoke test 覆盖
+
+### `cogmap-mcp` 工具增强
+
+- `cogmap_search_by_task` 工具入参加 `slim` / `limit` / `fields` 三个可选参数, 与 cogmap-core 对齐. AI 可以选择更省 token 的检索模式.
+
+### 新示例
+
+- **`examples/visual-baseline/`** (Q3): 视觉 baseline diff 配方 — pixelmatch + pngjs 实现, 兼容 Chrome MCP 截图. `npm run demo` 验证: 2.0% 像素差 > 1% 阈值 ⇒ 退出 1 ⇒ 检测到回退. 含 5 分钟试用 + SKILL.md 集成片段 + 进阶思路.
+
 ### 工程
 
 - **release-it 集成 (Q8)**: 三包 monorepo 一键 release 流程

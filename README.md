@@ -72,6 +72,13 @@ npm install
 ```
 适合：团队协作 / 多设备 / 多 AI 工具共享同一份 INTEL。需要自部署 INTEL 后端（map-api 项目模板待发，目前可参考 https://map-api.rigzin.top 实例）。
 
+## 示例 (examples/)
+
+| 目录 | 内容 |
+|---|---|
+| [`server-minimal`](./examples/server-minimal) | 170 行可跑的 INTEL HTTPS 后端 — Express + ajv + Bearer auth, 5 端点全通过 smoke |
+| [`visual-baseline`](./examples/visual-baseline) | 视觉 baseline diff 配方 (Q3) — pixelmatch + Chrome MCP 截图对比, 防 UI 回退 |
+
 ## 设计哲学
 
 - **机器优先而非人类优先** — wiki 是给人读的，CogMap 是给 AI 读的，按需切片

@@ -202,6 +202,82 @@ test('file:// mode searchByTask filters locally', async () => {
   }
 })
 
+test('Q6: searchByTask slim drops heavy recipe fields', async () => {
+  const tmpFile = `/tmp/cogmap-test-slim-${Date.now()}.json`
+  fs.writeFileSync(tmpFile, JSON.stringify({
+    _schema_version: 2,
+    rules: [],
+    recipes: [{
+      id: 'big-recipe',
+      scenario: 's',
+      triggers: ['foo'],
+      confidence: 'high',
+      skill_path: '.claude/skills/big/SKILL.md',
+      steps: ['heavy step 1', 'heavy step 2'],
+      tests: ['heavy test'],
+      acceptance_criteria: ['big criterion'],
+      lessons_to_obey: ['heavy lesson']
+    }]
+  }))
+  process.env.COGMAP_API_BASE = `file://${tmpFile}`
+  try {
+    const url = '../src/map-client.mjs?t=' + Date.now()
+    const { searchByTask } = await import(url)
+    const full = await searchByTask('foo')
+    const slim = await searchByTask('foo', { slim: true })
+    assert.equal(full.recipes[0].steps.length, 2, 'full mode keeps steps')
+    assert.equal(slim.recipes[0].steps, undefined, 'slim mode drops steps')
+    assert.equal(slim.recipes[0].id, 'big-recipe', 'slim keeps id')
+    assert.equal(slim.recipes[0].skill_path, '.claude/skills/big/SKILL.md', 'slim keeps skill_path')
+  } finally {
+    if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile)
+    delete process.env.COGMAP_API_BASE
+  }
+})
+
+test('Q6: searchByTask limit caps results per category', async () => {
+  const tmpFile = `/tmp/cogmap-test-limit-${Date.now()}.json`
+  fs.writeFileSync(tmpFile, JSON.stringify({
+    _schema_version: 2,
+    rules: [
+      { text: 'foo rule 1', critical: true },
+      { text: 'foo rule 2', critical: false },
+      { text: 'foo rule 3', critical: false }
+    ]
+  }))
+  process.env.COGMAP_API_BASE = `file://${tmpFile}`
+  try {
+    const url = '../src/map-client.mjs?t=' + Date.now()
+    const { searchByTask } = await import(url)
+    const r = await searchByTask('foo', { limit: 2 })
+    assert.equal(r.rules.length, 2, 'limit=2 should return 2 rules')
+  } finally {
+    if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile)
+    delete process.env.COGMAP_API_BASE
+  }
+})
+
+test('Q6: searchByTask fields filter hides categories', async () => {
+  const tmpFile = `/tmp/cogmap-test-fields-${Date.now()}.json`
+  fs.writeFileSync(tmpFile, JSON.stringify({
+    _schema_version: 2,
+    rules: [{ text: 'foo rule', critical: true }],
+    bugs: { 'X.vue': { types: ['foo bug'], count: 1 } }
+  }))
+  process.env.COGMAP_API_BASE = `file://${tmpFile}`
+  try {
+    const url = '../src/map-client.mjs?t=' + Date.now()
+    const { searchByTask } = await import(url)
+    const r = await searchByTask('foo', { fields: ['rules'] })
+    assert.ok(Array.isArray(r.rules) && r.rules.length === 1, 'rules included')
+    assert.equal(r.bugs, undefined, 'bugs excluded by fields filter')
+    assert.equal(r.lessons, undefined, 'lessons excluded by fields filter')
+  } finally {
+    if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile)
+    delete process.env.COGMAP_API_BASE
+  }
+})
+
 test('get-key throws if no source found', async () => {
   const orig = process.env.COGMAP_API_KEY
   delete process.env.COGMAP_API_KEY

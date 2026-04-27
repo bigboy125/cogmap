@@ -1,0 +1,15 @@
+{
+  "name": "cogmap-visual-baseline-example",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CogMap 视觉 baseline diff 配方 — 用 Chrome MCP 截图 + pixelmatch 对比, 防 UI 回退",
+  "type": "module",
+  "scripts": {
+    "demo": "node generate-fixtures.mjs && node compare.mjs fixtures/baseline.png fixtures/current.png diff.png",
+    "generate-fixtures": "node generate-fixtures.mjs"
+  },
+  "dependencies": {
+    "pixelmatch": "^7.1.0",
+    "pngjs": "^7.0.0"
+  }
+}

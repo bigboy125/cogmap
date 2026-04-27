@@ -1,0 +1,5 @@
+node_modules/
+fixtures/
+diff.png
+*.diff.png
+package-lock.json

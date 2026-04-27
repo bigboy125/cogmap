@@ -193,7 +193,9 @@
       "category": "testing",
       "title": "L5 视觉 baseline diff — chrome MCP 截图基线对比, 防 UI 回退",
       "priority": "p1",
-      "status": "proposed"
+      "status": "done",
+      "completed_at": "2026-04-28",
+      "notes": "examples/visual-baseline/ 落地 — pixelmatch + pngjs, compare.mjs 主脚本 + generate-fixtures demo + README 含 SKILL.md 集成片段. demo 实跑通过 (2.0% diff > 1% 阈值, 退出 1). 不内置 cogmap-core 因 ~50KB 依赖太重, 做成可选 example."
     },
     {
       "id": "Q4",
@@ -217,7 +219,9 @@
       "category": "performance",
       "title": "P-6 lessons token 切片优化 — 单次拉取从 50KB 降到 5KB",
       "priority": "p2",
-      "status": "proposed"
+      "status": "done",
+      "completed_at": "2026-04-28",
+      "notes": "searchByTask(query, opts) 新增 slim/limit/fields 3 选项, 兼容旧调用. cogmap-mcp search_by_task 同步暴露. HTTPS 模式以 query param 透传给后端. 3 个 smoke test 覆盖 (13/13 全过)."
     },
     {
       "id": "Q7",
@@ -264,6 +268,7 @@
     { "ts": "2026-04-27T22:00:00Z", "kind": "docs", "summary": "archive/ 整理 (explainers + plans + handoffs + briefs) + HANDOFF.md 顶层入口 + .gitignore archive/" },
     { "ts": "2026-04-27T23:30:00Z", "kind": "ci", "summary": "publish.yml 加 mcp-v* tag handler, 三包 tag-trigger publish 全打通 + Q1 状态校正 (proposed → in_progress)" },
     { "ts": "2026-04-27T23:50:00Z", "kind": "release", "summary": "v0.1.2 三包 publish: cogmap-core@0.1.2 + create-cogmap@0.1.2 + cogmap-mcp@0.1.0(首发). npx cogmap-mcp 启动验证 ok." },
-    { "ts": "2026-04-28T00:30:00Z", "kind": "feature", "summary": "Q5+Q7+Q8 done: rules applies_to 8 条 dogfood 填充 + release-it@20 三包 monorepo 集成 + Q7 docs 三件套状态校正. Q4 标 blocked (lessons tags 需 consumer 重构, 留待下轮)." }
+    { "ts": "2026-04-28T00:30:00Z", "kind": "feature", "summary": "Q5+Q7+Q8 done: rules applies_to 8 条 dogfood 填充 + release-it@20 三包 monorepo 集成 + Q7 docs 三件套状态校正. Q4 标 blocked (lessons tags 需 consumer 重构, 留待下轮)." },
+    { "ts": "2026-04-28T01:30:00Z", "kind": "feature", "summary": "Q3+Q6 done: visual-baseline example (pixelmatch demo 实跑通过) + searchByTask slim/limit/fields 三选项 (cogmap-core + cogmap-mcp 同步, 13/13 测试)." }
   ]
 }
