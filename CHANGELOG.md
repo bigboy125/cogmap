@@ -2,7 +2,11 @@
 
 ## [Unreleased]
 
-### `cogmap-mcp@0.1.0` (新包,待发)
+## [0.1.2] — 2026-04-27
+
+三包同日发布: `cogmap-core@0.1.2` + `create-cogmap@0.1.2` + `cogmap-mcp@0.1.0`(新包首发).
+
+### `cogmap-mcp@0.1.0` (新包首发)
 
 新增包. CogMap **MCP Server** — 把 INTEL 暴露成 Model Context Protocol tools, 任何 MCP 客户端 (Claude Code / Cursor / Continue / Cline / Zed) 都能用.
 
@@ -19,7 +23,7 @@ echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}' | node package
 ```
 返回正确的 initialize response, 7 个 tool 全部 list 出.
 
-### `cogmap-core@0.1.2` (待发)
+### `cogmap-core@0.1.2`
 
 新增:
 - **file:// 本地模式** — `api_base: "file://./INTEL.json"` 直接读写本地 JSON, 无需后端
@@ -28,7 +32,7 @@ echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}' | node package
   - searchByTask 在 file:// 模式下做客户端 OR 检索 (rules + lessons + bugs + recipes)
 - 新导出: `isFileMode(base)` 帮助函数
 
-### `create-cogmap@0.1.2` (待发)
+### `create-cogmap@0.1.2`
 
 新增:
 - **跨 AI 工具同步脚本**(AI agnostic 真正落地):

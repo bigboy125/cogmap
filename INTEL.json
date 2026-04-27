@@ -161,8 +161,9 @@
       "category": "release",
       "title": "v0.1.2 AI agnostic + file:// 本地模式 + CI",
       "priority": "p0",
-      "status": "in_progress",
-      "notes": "代码完成, 待 publish (用户 token)"
+      "status": "done",
+      "completed_at": "2026-04-27",
+      "notes": "三包同日 publish: cogmap-core@0.1.2 + create-cogmap@0.1.2 + cogmap-mcp@0.1.0(首发). npx cogmap-mcp@0.1.0 启动验证通过."
     },
     {
       "id": "Q1",
@@ -246,6 +247,7 @@
     { "ts": "2026-04-26T17:00:00Z", "kind": "release", "summary": "v0.1.1 schema fix + worktree" },
     { "ts": "2026-04-27T15:00:00Z", "kind": "milestone", "summary": "v0.1.2 代码 ready: AI agnostic + file:// 模式 + CI" },
     { "ts": "2026-04-27T22:00:00Z", "kind": "docs", "summary": "archive/ 整理 (explainers + plans + handoffs + briefs) + HANDOFF.md 顶层入口 + .gitignore archive/" },
-    { "ts": "2026-04-27T23:30:00Z", "kind": "ci", "summary": "publish.yml 加 mcp-v* tag handler, 三包 tag-trigger publish 全打通 + Q1 状态校正 (proposed → in_progress)" }
+    { "ts": "2026-04-27T23:30:00Z", "kind": "ci", "summary": "publish.yml 加 mcp-v* tag handler, 三包 tag-trigger publish 全打通 + Q1 状态校正 (proposed → in_progress)" },
+    { "ts": "2026-04-27T23:50:00Z", "kind": "release", "summary": "v0.1.2 三包 publish: cogmap-core@0.1.2 + create-cogmap@0.1.2 + cogmap-mcp@0.1.0(首发). npx cogmap-mcp 启动验证 ok." }
   ]
 }
