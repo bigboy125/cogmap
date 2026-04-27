@@ -1,0 +1,21 @@
+{
+  "name": "cogmap-server-minimal",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "最小可运行的 CogMap INTEL 后端 — Express + ajv + JSON 文件持久化, ~120 行代码, 5 分钟起服务",
+  "main": "server.mjs",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node --watch server.mjs",
+    "init-key": "node -e \"console.log('ADMIN_API_KEY=' + require('crypto').randomBytes(32).toString('hex'))\""
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "ajv": "^8.17.1",
+    "cors": "^2.8.5"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
