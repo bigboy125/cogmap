@@ -261,10 +261,20 @@
       "三层架构: 项目记忆 (HTTPS API) + 全链路 Agent (SKILL.md) + 跨项目复用 (npm 包 + CLI)",
       "AI agnostic — 不锁定 Claude, 任何 AI 工具都能消费同一份 INTEL"
     ],
-    "current_state": "v0.1.2 代码 ready, 待 publish. v0.1.1 已上线 npm.",
+    "current_state": "v0.1.3 代码 ready in GitHub (commit 488d40f), 路线图 11/11 全 done. npm 上仍是 v0.1.2/v0.1.0 — 用户 publish 卡 token 权限.",
     "github": "https://github.com/bigboy125/cogmap",
-    "npm": ["cogmap-core (0.1.1)", "create-cogmap (0.1.1)"],
-    "next_session_first_action": "cd /Users/laoluo/老罗的项目/cogmap && npm test (验证 10 个 smoke 通过) + node packages/cli/src/cli.mjs version (验证 CLI ok)"
+    "npm": [
+      "cogmap-core (上线 0.1.2 / 本地 ready 0.1.3)",
+      "create-cogmap (上线 0.1.2 / 本地 ready 0.1.3)",
+      "cogmap-mcp (上线 0.1.0 / 本地 ready 0.1.1)"
+    ],
+    "publish_pending": {
+      "tags_pushed": ["core-v0.1.3", "cli-v0.1.3", "mcp-v0.1.1"],
+      "tags_status": "GitHub Actions publish.yml 触发了但 3 个 run 全 failed (npm 404 = 实为权限错误). NPM_TOKEN GH secret 已配置但 token 权限不足.",
+      "fix_path_A": "用户重新生成 npm granular token (Read+Write + 三包全选 + Bypass 2FA), 更新 GH secret NPM_TOKEN, 然后从 GitHub Actions UI 上 re-run failed runs 即可发布",
+      "fix_path_B": "用户本地手动 publish: cd ~ && npm config set --location=user //registry.npmjs.org/:_authToken=<token> && npm whoami; 然后 cd packages/core && npm publish --access=public 三个包顺序"
+    },
+    "next_session_first_action": "查 publish_pending 字段, 确认 npm 现状: npm view cogmap-core version create-cogmap version cogmap-mcp version. 如显示 0.1.3/0.1.3/0.1.1 = 用户已 publish, 标 timeline + revoke token. 否则按 fix_path_A 或 B 推进."
   },
   "app_meta": {
     "name": "CogMap",
@@ -284,7 +294,8 @@
     { "ts": "2026-04-28T01:30:00Z", "kind": "feature", "summary": "Q3+Q6 done: visual-baseline example (pixelmatch demo 实跑通过) + searchByTask slim/limit/fields 三选项 (cogmap-core + cogmap-mcp 同步, 13/13 测试)." },
     { "ts": "2026-04-28T03:00:00Z", "kind": "feature", "summary": "Q2 done: L3 模式驱动 retry agent (老罗修正后的方法论 — 基于过去成功的标准, 不是统一规则). Schema 加 retry_log + bugs.fix_pattern. 新增 cogmap-core/match-failure-precedent + log-retry. R14 强制规范, retry-on-failure SKILL 模板. cogmap-mcp 真机验证 (Cursor/Claude Code) 通过 npx cogmap-mcp 启动 ok, MCP server 接入 Claude Code 端到端调用工具成功." },
     { "ts": "2026-04-28T04:00:00Z", "kind": "release", "summary": "Q1 done: cogmap-mcp 真机验证完整通过 — 用户在 Claude Code 实测 cogmap_search_by_task 'publish' 返回 R8 + publish-flow 2 条 lesson + applies_to=release tag, R8 验证终点用户可见 闭环." },
-    { "ts": "2026-04-28T05:00:00Z", "kind": "feature", "summary": "Q4 done: lessons 双形态 (string | {text,tags}) — schema oneOf 兼容 + lesson-utils helper + cogmap-mcp 新工具 cogmap_search_lessons_by_tags + cogmap 17 条 lesson dogfood 加 tags + 5 smoke (23/23). 真机测 search_lessons_by_tags(['release']) 准确返回 4 条 publish-flow lessons. 路线图 11/11 项收官 (除 blocked 外全 done)." }
+    { "ts": "2026-04-28T05:00:00Z", "kind": "feature", "summary": "Q4 done: lessons 双形态 (string | {text,tags}) — schema oneOf 兼容 + lesson-utils helper + cogmap-mcp 新工具 cogmap_search_lessons_by_tags + cogmap 17 条 lesson dogfood 加 tags + 5 smoke (23/23). 真机测 search_lessons_by_tags(['release']) 准确返回 4 条 publish-flow lessons. 路线图 11/11 项收官 (除 blocked 外全 done)." },
+    { "ts": "2026-04-28T06:00:00Z", "kind": "release", "summary": "v0.1.3 bump + tag 推 GitHub (core-v0.1.3 / cli-v0.1.3 / mcp-v0.1.1). 用户配置 NPM_TOKEN GH secret 用 GH Actions 自动 publish, 但 3 个 CI run 全失败 (npm 404 = token 权限不足). 待用户修 token. 代码侧已 ready, 等 publish 即可." }
   ],
   "retry_log": []
 }
