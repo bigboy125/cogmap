@@ -50,31 +50,31 @@
   ],
   "lessons": {
     "publish-flow": [
-      "Granular token + Bypass 2FA 是 npm 2025-11 后唯一可行 publish 方式 (Classic token 已废)",
-      "npm token 只在创建瞬间显示一次, 必须立刻 Cmd+C 复制",
-      "token 敏感不要在公开渠道贴, 用完立刻 revoke + 生成新的",
-      "CLI publish 顺序: core → cli (cli 依赖 core), 第一次 publish 时 npm view 可能 404 因 CDN 同步延迟",
-      "首次发 unscoped 包要加 --access=public 防默认 private"
+      { "text": "Granular token + Bypass 2FA 是 npm 2025-11 后唯一可行 publish 方式 (Classic token 已废)", "tags": ["release", "credentials", "operations"] },
+      { "text": "npm token 只在创建瞬间显示一次, 必须立刻 Cmd+C 复制", "tags": ["release", "credentials", "ux"] },
+      { "text": "token 敏感不要在公开渠道贴, 用完立刻 revoke + 生成新的", "tags": ["security", "credentials", "ai-collab"] },
+      { "text": "CLI publish 顺序: core → cli (cli 依赖 core), 第一次 publish 时 npm view 可能 404 因 CDN 同步延迟", "tags": ["release", "monorepo", "operations"] },
+      { "text": "首次发 unscoped 包要加 --access=public 防默认 private", "tags": ["release", "packaging"] }
     ],
     "monorepo": [
-      "npm workspaces 自动建 symlink: node_modules/<pkg> → packages/<pkg>, 跨包 import 立即生效",
-      "templates 内的 .gitignore 对自己目录生效, 必须改名 (FILENAME_REWRITES) 避免污染 repo",
-      "templates/CLAUDE.md 之类被忽略文件: 检查所有层级 .gitignore (可能不只顶层)"
+      { "text": "npm workspaces 自动建 symlink: node_modules/<pkg> → packages/<pkg>, 跨包 import 立即生效", "tags": ["monorepo", "packaging", "tooling"] },
+      { "text": "templates 内的 .gitignore 对自己目录生效, 必须改名 (FILENAME_REWRITES) 避免污染 repo", "tags": ["templates", "packaging", "gitignore"] },
+      { "text": "templates/CLAUDE.md 之类被忽略文件: 检查所有层级 .gitignore (可能不只顶层)", "tags": ["templates", "gitignore", "debugging"] }
     ],
     "schema-design": [
-      "JSON Schema additionalProperties: true 是兼容真实数据多样性的逃生口",
-      "iterations 字段在不同项目里结构不同 (object vs array), 不要写死 schema",
-      "roadmap.id 用 ^[A-Z]+\\d+$ 模式 (P1/L1/A3), 字母段+数字, 简洁可索引"
+      { "text": "JSON Schema additionalProperties: true 是兼容真实数据多样性的逃生口", "tags": ["schema", "api-design", "compatibility"] },
+      { "text": "iterations 字段在不同项目里结构不同 (object vs array), 不要写死 schema", "tags": ["schema", "compatibility", "api-design"] },
+      { "text": "roadmap.id 用 ^[A-Z]+\\d+$ 模式 (P1/L1/A3), 字母段+数字, 简洁可索引", "tags": ["schema", "naming"] }
     ],
     "ai-agnostic": [
-      "AGENTS.md 是 OpenAI Codex 等多工具通用标准, 比 CLAUDE.md 更通用",
-      "Cursor 用 .cursor/rules/*.mdc 格式 (含 frontmatter alwaysApply: true)",
-      "同一份 INTEL → 多种规则文件格式输出 = 真正的 AI agnostic"
+      { "text": "AGENTS.md 是 OpenAI Codex 等多工具通用标准, 比 CLAUDE.md 更通用", "tags": ["ai-collab", "interop", "documentation"] },
+      { "text": "Cursor 用 .cursor/rules/*.mdc 格式 (含 frontmatter alwaysApply: true)", "tags": ["ai-collab", "interop", "cursor"] },
+      { "text": "同一份 INTEL → 多种规则文件格式输出 = 真正的 AI agnostic", "tags": ["ai-collab", "interop", "architecture"] }
     ],
     "claude-code-worktree": [
-      "Claude Code v2.1.49+ 原生 worktree (claude -w name) 是会话级隔离, 跟 Agent tool isolation:worktree 互补",
-      "改动 >5 文件 / 跨模块 / 长实验 → 必须先 claude -w 切原生 worktree",
-      ".claude/worktrees/ 必须 .gitignore (R13)"
+      { "text": "Claude Code v2.1.49+ 原生 worktree (claude -w name) 是会话级隔离, 跟 Agent tool isolation:worktree 互补", "tags": ["ai-collab", "claude-code", "workflow"] },
+      { "text": "改动 >5 文件 / 跨模块 / 长实验 → 必须先 claude -w 切原生 worktree", "tags": ["ai-collab", "workflow", "git"] },
+      { "text": ".claude/worktrees/ 必须 .gitignore (R13)", "tags": ["gitignore", "claude-code", "ai-collab"] }
     ]
   },
   "bugs": {
@@ -213,8 +213,9 @@
       "category": "data",
       "title": "C2 lessons 加 tags 字段 + migration, 提升 by-task 切片精度",
       "priority": "p1",
-      "status": "blocked",
-      "notes": "本轮发现需 schema 双形态兼容 (string | {text,tags}) + consumer 重构 (check-bug-history.mjs:26 + map-client.mjs:138 + audit.mjs 都假设 string item). 不是 30min 工, 至少 1.5h. 留待下轮."
+      "status": "done",
+      "completed_at": "2026-04-28",
+      "notes": "Schema 改 oneOf [string, {text,tags}] 双形态兼容 (旧 INTEL 不动还能用). 新建 cogmap-core/lesson-utils (getLessonText/getLessonTags/searchLessonsByTags). map-client.mjs + match-failure-precedent.mjs 用 helper 兼容双形态. cogmap-mcp 加新工具 cogmap_search_lessons_by_tags (OR/AND/limit). cogmap 自身 17 条 lesson dogfood 全部加 tags. 5 个 smoke test 覆盖 (23/23 全过). 真机测 search_lessons_by_tags(['release']) 返回 4 条 publish-flow lessons, 准确."
     },
     {
       "id": "Q5",
@@ -281,7 +282,9 @@
     { "ts": "2026-04-27T23:50:00Z", "kind": "release", "summary": "v0.1.2 三包 publish: cogmap-core@0.1.2 + create-cogmap@0.1.2 + cogmap-mcp@0.1.0(首发). npx cogmap-mcp 启动验证 ok." },
     { "ts": "2026-04-28T00:30:00Z", "kind": "feature", "summary": "Q5+Q7+Q8 done: rules applies_to 8 条 dogfood 填充 + release-it@20 三包 monorepo 集成 + Q7 docs 三件套状态校正. Q4 标 blocked (lessons tags 需 consumer 重构, 留待下轮)." },
     { "ts": "2026-04-28T01:30:00Z", "kind": "feature", "summary": "Q3+Q6 done: visual-baseline example (pixelmatch demo 实跑通过) + searchByTask slim/limit/fields 三选项 (cogmap-core + cogmap-mcp 同步, 13/13 测试)." },
-    { "ts": "2026-04-28T03:00:00Z", "kind": "feature", "summary": "Q2 done: L3 模式驱动 retry agent (老罗修正后的方法论 — 基于过去成功的标准, 不是统一规则). Schema 加 retry_log + bugs.fix_pattern. 新增 cogmap-core/match-failure-precedent + log-retry. R14 强制规范, retry-on-failure SKILL 模板. cogmap-mcp 真机验证 (Cursor/Claude Code) 通过 npx cogmap-mcp 启动 ok, MCP server 接入 Claude Code 端到端调用工具成功." }
+    { "ts": "2026-04-28T03:00:00Z", "kind": "feature", "summary": "Q2 done: L3 模式驱动 retry agent (老罗修正后的方法论 — 基于过去成功的标准, 不是统一规则). Schema 加 retry_log + bugs.fix_pattern. 新增 cogmap-core/match-failure-precedent + log-retry. R14 强制规范, retry-on-failure SKILL 模板. cogmap-mcp 真机验证 (Cursor/Claude Code) 通过 npx cogmap-mcp 启动 ok, MCP server 接入 Claude Code 端到端调用工具成功." },
+    { "ts": "2026-04-28T04:00:00Z", "kind": "release", "summary": "Q1 done: cogmap-mcp 真机验证完整通过 — 用户在 Claude Code 实测 cogmap_search_by_task 'publish' 返回 R8 + publish-flow 2 条 lesson + applies_to=release tag, R8 验证终点用户可见 闭环." },
+    { "ts": "2026-04-28T05:00:00Z", "kind": "feature", "summary": "Q4 done: lessons 双形态 (string | {text,tags}) — schema oneOf 兼容 + lesson-utils helper + cogmap-mcp 新工具 cogmap_search_lessons_by_tags + cogmap 17 条 lesson dogfood 加 tags + 5 smoke (23/23). 真机测 search_lessons_by_tags(['release']) 准确返回 4 条 publish-flow lessons. 路线图 11/11 项收官 (除 blocked 外全 done)." }
   ],
   "retry_log": []
 }

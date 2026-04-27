@@ -123,6 +123,8 @@ export async function patchRoadmap(id, updates) {
   return r.json()
 }
 
+import { getLessonText } from './lesson-utils.mjs'
+
 // 轻量 recipe — 决策时通常只看头部字段, 重内容 (steps/tests/criteria) 进 SKILL.md
 const SLIM_RECIPE_FIELDS = new Set([
   'id', 'scenario', 'triggers', 'confidence', 'estimatedTime', 'skill_path'
@@ -173,8 +175,9 @@ export async function searchByTask(query, opts = {}) {
       let count = 0
       for (const [nodeId, lessons] of Object.entries(intel.lessons || {})) {
         if (count >= limit) break
+        // (Q4) 双形态兼容: lesson item 可以是 string 或 {text, tags}, 用 getLessonText 取文本
         const matched = (Array.isArray(lessons) ? lessons : []).filter((l) =>
-          String(l).toLowerCase().includes(lower)
+          getLessonText(l).toLowerCase().includes(lower)
         )
         if (matched.length) {
           result.lessons[nodeId] = matched

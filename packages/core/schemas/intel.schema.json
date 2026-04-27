@@ -31,10 +31,27 @@
     },
     "lessons": {
       "type": "object",
-      "description": "按节点 ID 索引的经验教训",
+      "description": "按节点 ID 索引的经验教训. (Q4) 每条 lesson 可以是纯字符串 (旧形态, 兼容) 或 {text, tags} 对象 (新形态, 加语义标签便于切片).",
       "additionalProperties": {
         "type": "array",
-        "items": { "type": "string" }
+        "items": {
+          "oneOf": [
+            { "type": "string" },
+            {
+              "type": "object",
+              "required": ["text"],
+              "properties": {
+                "text": { "type": "string", "minLength": 1 },
+                "tags": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "description": "语义标签, 如 ['security','release','frontend']. 用于跨 topic 检索."
+                }
+              },
+              "additionalProperties": true
+            }
+          ]
+        }
       }
     },
     "bugs": {

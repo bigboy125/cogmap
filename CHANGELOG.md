@@ -2,6 +2,31 @@
 
 ## [Unreleased]
 
+### `cogmap-core` 新模块 (Q4 lessons tags)
+
+- **`lesson-utils.mjs`**: lessons 双形态兼容工具
+  - `getLessonText(item)` — 兼容 `string` 和 `{text, tags}`, 取文本
+  - `getLessonTags(item)` — 取 tags (字符串形态返回 [], 对象形态去重小写)
+  - `searchLessonsByTags(intel, tags, opts)` — 跨 topic 按 tag 检索
+    - 默认 OR 关系, `requireAll: true` 改 AND
+    - `limit` 截断
+- `map-client.mjs` searchByTask + `match-failure-precedent.mjs` 改用 helper, 兼容双形态
+- 5 个 smoke test (helper 单元 + searchByTask 双形态 + schema 双形态 + 缺 text 拒绝)
+
+### Schema 扩展 (Q4)
+
+- `lessons.<topic>` items 从 `string[]` 升级为 `oneOf [string, {text, tags}][]`
+  - 旧 INTEL 不改还能用 (string 形态保留)
+  - 新 INTEL 可以 `{ "text": "...", "tags": ["security","release"] }`
+- `tags` 字段是字符串数组, 用于跨 topic 维度检索
+
+### `cogmap-mcp` 新工具 (Q4)
+
+- **`cogmap_search_lessons_by_tags`** — 按 tag 跨 topic 检索 lessons
+  - 入参: `tags` (必填) / `requireAll` / `limit`
+  - 比 `search_by_task` 更精准: 不靠关键词靠语义标签
+  - 例: 查所有 security 类教训, 跨多个 topic
+
 ### `cogmap-core` 新模块 (Q2 L3 失败自修复)
 
 - **`match-failure-precedent.mjs`**: 错误文本 → 在 INTEL.bugs/lessons/retry_log 里查相似先例 → 返回最高分 fix_pattern 或 null

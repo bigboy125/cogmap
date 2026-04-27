@@ -34,3 +34,5 @@ export { validateIntel } from './validate.mjs'
 export { matchFailurePrecedent, tokenize, jaccard } from './match-failure-precedent.mjs'
 
 export { logRetry, countAttemptsForSignature } from './log-retry.mjs'
+
+export { getLessonText, getLessonTags, searchLessonsByTags } from './lesson-utils.mjs'

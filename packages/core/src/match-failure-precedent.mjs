@@ -17,6 +17,7 @@
  */
 
 import { getIntel } from './map-client.mjs'
+import { getLessonText } from './lesson-utils.mjs'
 
 // 通用停用词 (中英混合) — 用于过滤无信息量 tokens
 const STOP_WORDS = new Set([
@@ -100,10 +101,11 @@ export async function matchFailurePrecedent(errorText, opts = {}) {
   }
 
   // 3. lessons — 兜底 (打 0.8 折, 因为是反思不是直接 fix_pattern)
+  // (Q4) 双形态兼容: 用 getLessonText 取文本
   for (const [topic, lessons] of Object.entries(intel.lessons || {})) {
     if (!Array.isArray(lessons)) continue
     for (const l of lessons) {
-      const text = String(l && l.text ? l.text : l) // Q4 future-proof: 兼容 string | {text,tags}
+      const text = getLessonText(l)
       const score = jaccard(errTokens, tokenize(text))
       if (score >= threshold) {
         candidates.push({

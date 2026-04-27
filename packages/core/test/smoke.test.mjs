@@ -278,6 +278,98 @@ test('Q6: searchByTask fields filter hides categories', async () => {
   }
 })
 
+test('Q4: getLessonText handles string and object forms', async () => {
+  const { getLessonText, getLessonTags } = await import('../src/lesson-utils.mjs')
+  // 旧字符串形态
+  assert.equal(getLessonText('plain lesson'), 'plain lesson')
+  assert.deepEqual(getLessonTags('plain lesson'), [])
+  // 新对象形态
+  assert.equal(getLessonText({ text: 'object lesson', tags: ['security'] }), 'object lesson')
+  assert.deepEqual(getLessonTags({ text: 'X', tags: ['SECURITY', 'release', 'security'] }), ['security', 'release'])
+  // 边界
+  assert.equal(getLessonText(null), '')
+  assert.deepEqual(getLessonTags(null), [])
+})
+
+test('Q4: searchLessonsByTags OR/AND across topics', async () => {
+  const { searchLessonsByTags } = await import('../src/lesson-utils.mjs')
+  const intel = {
+    lessons: {
+      'publish-flow': [
+        { text: 'Granular token + 2FA', tags: ['security', 'release'] },
+        'plain string lesson, ignored by tags' // 旧形态, 无 tags, 不会命中
+      ],
+      'frontend-perf': [
+        { text: 'lazy load images', tags: ['performance', 'frontend'] },
+        { text: 'CSP headers', tags: ['security', 'frontend'] }
+      ]
+    }
+  }
+  // OR: security 命中 2 条 (跨 publish-flow + frontend-perf)
+  const orRes = searchLessonsByTags(intel, ['security'])
+  assert.equal(orRes.length, 2)
+  assert.ok(orRes.some((r) => r.topic === 'publish-flow'))
+  assert.ok(orRes.some((r) => r.topic === 'frontend-perf'))
+
+  // AND: 必须同时含 security + frontend = 只 CSP 命中
+  const andRes = searchLessonsByTags(intel, ['security', 'frontend'], { requireAll: true })
+  assert.equal(andRes.length, 1)
+  assert.equal(andRes[0].text, 'CSP headers')
+
+  // limit 截断
+  const limited = searchLessonsByTags(intel, ['security', 'release', 'frontend', 'performance'], { limit: 2 })
+  assert.equal(limited.length, 2)
+})
+
+test('Q4: searchByTask still works with object-form lessons', async () => {
+  const tmpFile = `/tmp/cogmap-test-q4-search-${Date.now()}.json`
+  fs.writeFileSync(tmpFile, JSON.stringify({
+    _schema_version: 2,
+    rules: [],
+    lessons: {
+      'mixed': [
+        'old string mentioning iOS',
+        { text: 'new object mentioning iOS too', tags: ['mobile'] },
+        { text: 'unrelated Android stuff', tags: ['mobile'] }
+      ]
+    }
+  }))
+  process.env.COGMAP_API_BASE = `file://${tmpFile}`
+  try {
+    const url = '../src/map-client.mjs?t=' + Date.now()
+    const { searchByTask } = await import(url)
+    const r = await searchByTask('iOS')
+    assert.equal(r.lessons.mixed.length, 2, 'should match both string AND object lessons containing iOS')
+  } finally {
+    if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile)
+    delete process.env.COGMAP_API_BASE
+  }
+})
+
+test('Q4: schema accepts both string and object lesson forms', () => {
+  const validate = makeValidator()
+  const sample = {
+    _schema_version: 2,
+    rules: [{ text: 'r' }],
+    lessons: {
+      'topic-a': ['old string form'],
+      'topic-b': [{ text: 'new form', tags: ['security'] }],
+      'topic-c': ['mixed', { text: 'works too', tags: ['x'] }]
+    }
+  }
+  assert.equal(validate(sample), true, JSON.stringify(validate.errors))
+})
+
+test('Q4: schema rejects malformed object lesson (missing text)', () => {
+  const validate = makeValidator()
+  const sample = {
+    _schema_version: 2,
+    rules: [{ text: 'r' }],
+    lessons: { 'x': [{ tags: ['security'] }] } // 缺 text
+  }
+  assert.equal(validate(sample), false, 'lesson object 必须有 text')
+})
+
 test('Q2 L3: matchFailurePrecedent hits bug with fix_pattern', async () => {
   const { matchFailurePrecedent } = await import('../src/match-failure-precedent.mjs')
   const intel = {

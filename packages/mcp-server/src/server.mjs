@@ -27,7 +27,8 @@ import {
   matchRecipe,
   checkBugHistory,
   isFileMode,
-  getApiBase
+  getApiBase,
+  searchLessonsByTags
 } from 'cogmap-core'
 
 const PROTOCOL_VERSION = '2024-11-05'
@@ -126,6 +127,27 @@ const TOOLS = [
     name: 'cogmap_info',
     description: '查询当前 CogMap 配置 (api_base / mode / version).',
     inputSchema: { type: 'object', properties: {} }
+  },
+  {
+    name: 'cogmap_search_lessons_by_tags',
+    description:
+      '(Q4) 跨 topic 按 tag 检索 lessons. 返回所有命中至少一个 tag (默认 OR) 或全部 tags (requireAll=true) 的 lesson 项. 比 search_by_task 关键词更精准 — 用于"查所有 security 类教训"这种维度查询.',
+    inputSchema: {
+      type: 'object',
+      required: ['tags'],
+      properties: {
+        tags: {
+          type: 'array',
+          items: { type: 'string' },
+          description: '语义标签数组, 如 ["security","release"]'
+        },
+        requireAll: {
+          type: 'boolean',
+          description: '默认 false (OR). true 改成 AND, lesson 必须含全部 tags 才命中.'
+        },
+        limit: { type: 'integer', minimum: 1, description: '最多返回几条' }
+      }
+    }
   }
 ]
 
@@ -154,6 +176,11 @@ async function callTool(name, args) {
         server: SERVER_INFO,
         protocol: PROTOCOL_VERSION
       }
+    }
+    case 'cogmap_search_lessons_by_tags': {
+      const intel = await getIntel()
+      const { tags = [], requireAll = false, limit } = args
+      return searchLessonsByTags(intel, tags, { requireAll, limit })
     }
     default:
       throw new Error(`unknown tool: ${name}`)
