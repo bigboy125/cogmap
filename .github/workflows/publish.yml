@@ -5,6 +5,7 @@ on:
     tags:
       - 'core-v*'      # 推 tag core-v0.1.2 → publish cogmap-core
       - 'cli-v*'       # 推 tag cli-v0.1.2 → publish create-cogmap
+      - 'mcp-v*'       # 推 tag mcp-v0.1.0 → publish cogmap-mcp
 
 jobs:
   publish-core:
@@ -42,5 +43,22 @@ jobs:
           test -f /tmp/ci-test/CLAUDE.md
       - name: Publish
         run: cd packages/cli && npm publish --access=public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-mcp:
+    if: startsWith(github.ref, 'refs/tags/mcp-v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm install
+      - name: Smoke test (boot + EOF exit)
+        run: timeout 5 node packages/mcp-server/src/server.mjs < /dev/null
+      - name: Publish
+        run: cd packages/mcp-server && npm publish --access=public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
