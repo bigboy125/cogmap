@@ -22,12 +22,18 @@ function parseArgs(args) {
   return out
 }
 
+// 模板内文件名 → 目标文件名映射 (避免 templates 目录下的 .gitignore 影响 cogmap repo 自己)
+const FILENAME_REWRITES = {
+  _gitignore: '.gitignore'
+}
+
 function copyDir(src, dest, replacements = {}) {
   if (!fs.existsSync(src)) return
   fs.mkdirSync(dest, { recursive: true })
   for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
     const s = path.join(src, entry.name)
-    const d = path.join(dest, entry.name)
+    const targetName = FILENAME_REWRITES[entry.name] || entry.name
+    const d = path.join(dest, targetName)
     if (entry.isDirectory()) {
       copyDir(s, d, replacements)
     } else {
