@@ -11,7 +11,9 @@ dist/
 coverage/
 
 # CogMap auto-injected files
-CLAUDE.md
+# 只忽略仓库**根**的 CLAUDE.md (cogmap repo 自己用的, 由 SessionStart hook 注入)
+# 不能写无 / 前缀, 否则会同时匹配 packages/cli/templates/CLAUDE.md
+/CLAUDE.md
 .cogmap-cache/
 
 # Claude Code v2.1.49+ 原生 worktree (临时工作树, 不入主 repo, R13)
