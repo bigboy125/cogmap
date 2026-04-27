@@ -33,6 +33,18 @@ Claude Code v2.1.49 (2026-02) 起原生支持 `claude -w <name>`。CogMap 与之
 
 CogMap 在 INTEL.rules 立 **R13** 强制规范：改动 >5 文件 必须先 `claude -w`。新项目 `npx create-cogmap` 自动把 `.claude/worktrees/` 加 .gitignore。`cogmap doctor` 检查残留 worktree。
 
+## AI agnostic — 跨工具同步
+
+CogMap 不锁 Claude。同一份 INTEL 可同步到任何 AI 工具的规则文件:
+
+| 工具 | 规则文件 | 同步脚本 |
+|---|---|---|
+| Claude Code | `CLAUDE.md` | `node scripts/sync-intel-to-claude-md.mjs` (SessionStart hook 自动) |
+| Cursor | `.cursor/rules/cogmap.mdc` | `node scripts/sync-intel-to-cursor-rules.mjs` |
+| OpenAI Codex / Cursor / Continue / Aider | `AGENTS.md` (通用标准) | `node scripts/sync-intel-to-agents-md.mjs` |
+
+> 协议核心是 INTEL HTTPS API; 各 AI 工具用自己的规则文件格式消费, 不互相依赖. 换工具不丢记忆.
+
 ## 快速开始
 
 ```bash
