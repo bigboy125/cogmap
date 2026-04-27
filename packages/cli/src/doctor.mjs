@@ -70,11 +70,18 @@ export async function runDoctor() {
     checks.push({ ok: false, msg: `scripts/ not found` })
   }
 
-  // 5. COGMAP_API_KEY 环境
-  if (process.env.COGMAP_API_KEY) {
+  // 5. COGMAP_API_KEY 环境 (file:// 模式不需要)
+  let cfgFileMode = false
+  try {
+    const c = JSON.parse(fs.readFileSync(cfgPath, 'utf-8'))
+    cfgFileMode = c.api_base?.startsWith('file://') || c.api_base?.startsWith('./') || c.api_base?.startsWith('/')
+  } catch {}
+  if (cfgFileMode) {
+    checks.push({ ok: true, msg: `COGMAP_API_KEY: not needed (file:// mode)` })
+  } else if (process.env.COGMAP_API_KEY) {
     checks.push({ ok: true, msg: `COGMAP_API_KEY env: set (${process.env.COGMAP_API_KEY.slice(0, 4)}…)` })
   } else {
-    checks.push({ ok: false, msg: `COGMAP_API_KEY env not set (writes will fail)` })
+    checks.push({ ok: false, msg: `COGMAP_API_KEY env not set (writes will fail in HTTPS mode)` })
   }
 
   // 6. .claude/worktrees/ 检查(Claude Code v2.1.49+ 原生 worktree)
@@ -107,25 +114,46 @@ export async function runDoctor() {
     })
   }
 
-  // 8. INTEL 端点连通性
+  // 8. INTEL 端点连通性 (HTTPS 或 file)
   let cfg = null
   try {
     cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf-8'))
   } catch {}
   if (cfg?.api_base) {
-    try {
-      const r = await fetch(`${cfg.api_base}/api/intel`)
-      if (r.ok) {
-        const data = await r.json()
-        checks.push({
-          ok: true,
-          msg: `INTEL ${cfg.api_base}: GET ok (rules=${(data.rules || []).length}, recipes=${(data.recipes || []).length})`
-        })
+    const isFile = cfg.api_base.startsWith('file://') || cfg.api_base.startsWith('./') || cfg.api_base.startsWith('/')
+    if (isFile) {
+      // file:// 模式 — 验证文件存在
+      const filePath = cfg.api_base.replace(/^file:\/\//, '')
+      const absPath = filePath.startsWith('/') ? filePath : path.resolve(cwd, filePath)
+      if (fs.existsSync(absPath)) {
+        try {
+          const data = JSON.parse(fs.readFileSync(absPath, 'utf-8'))
+          checks.push({
+            ok: true,
+            msg: `INTEL file ${absPath}: ok (rules=${(data.rules || []).length}, recipes=${(data.recipes || []).length})`
+          })
+        } catch (e) {
+          checks.push({ ok: false, msg: `INTEL file ${absPath}: invalid JSON: ${e.message}` })
+        }
       } else {
-        checks.push({ ok: false, msg: `INTEL ${cfg.api_base}: HTTP ${r.status}` })
+        checks.push({ ok: false, msg: `INTEL file ${absPath}: not found (run cogmap init first)` })
       }
-    } catch (e) {
-      checks.push({ ok: false, msg: `INTEL ${cfg.api_base}: ${e.message}` })
+    } else {
+      // HTTPS 模式
+      try {
+        const r = await fetch(`${cfg.api_base}/api/intel`)
+        if (r.ok) {
+          const data = await r.json()
+          checks.push({
+            ok: true,
+            msg: `INTEL ${cfg.api_base}: GET ok (rules=${(data.rules || []).length}, recipes=${(data.recipes || []).length})`
+          })
+        } else {
+          checks.push({ ok: false, msg: `INTEL ${cfg.api_base}: HTTP ${r.status}` })
+        }
+      } catch (e) {
+        checks.push({ ok: false, msg: `INTEL ${cfg.api_base}: ${e.message}` })
+      }
     }
   }
 

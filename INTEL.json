@@ -1,0 +1,248 @@
+{
+  "_schema_version": 2,
+  "_doc": "cogmap 项目自身的 INTEL — 用 file:// 模式 dogfood. 跟 npm 包一起进 git, 任何贡献者 clone 都能立即用 cogmap 工具.",
+  "rules": [
+    {
+      "text": "【R1 交付前必须 E2E 自测】发布前 npm test 必须全过 + 真实 npx create-cogmap 拉公开包验证",
+      "critical": true
+    },
+    {
+      "text": "【R2 grep 验证】改 schema / API 路径前必须 grep 现有用法,确保兼容",
+      "critical": true
+    },
+    {
+      "text": "【R7 任务结束前 git status 自查】commit 前必须 git status, 不留遗漏",
+      "critical": true
+    },
+    {
+      "text": "【R8 验证终点用户可见】npm publish 后必须 npx 拉公开包跑通, 不是本地 link 跑过即算",
+      "critical": true
+    },
+    {
+      "text": "【npm scoped vs unscoped】坚持 unscoped (cogmap-core / create-cogmap), 不绑定 org",
+      "critical": false
+    },
+    {
+      "text": "【templates 内 .gitignore 必须改名 _gitignore】否则会影响 cogmap repo 自己的 git tracking",
+      "critical": true
+    },
+    {
+      "text": "【顶层 .gitignore CLAUDE.md 必须 / 前缀】否则会同时屏蔽 templates/CLAUDE.md, 导致模板进不了 repo",
+      "critical": true
+    },
+    {
+      "text": "【push 后 wait > 5s 才能 npx --yes pull】npm registry CDN 同步有延迟, smoke 验证前 sleep 8s 比较稳",
+      "critical": false
+    }
+  ],
+  "lessons": {
+    "publish-flow": [
+      "Granular token + Bypass 2FA 是 npm 2025-11 后唯一可行 publish 方式 (Classic token 已废)",
+      "npm token 只在创建瞬间显示一次, 必须立刻 Cmd+C 复制",
+      "token 敏感不要在公开渠道贴, 用完立刻 revoke + 生成新的",
+      "CLI publish 顺序: core → cli (cli 依赖 core), 第一次 publish 时 npm view 可能 404 因 CDN 同步延迟",
+      "首次发 unscoped 包要加 --access=public 防默认 private"
+    ],
+    "monorepo": [
+      "npm workspaces 自动建 symlink: node_modules/<pkg> → packages/<pkg>, 跨包 import 立即生效",
+      "templates 内的 .gitignore 对自己目录生效, 必须改名 (FILENAME_REWRITES) 避免污染 repo",
+      "templates/CLAUDE.md 之类被忽略文件: 检查所有层级 .gitignore (可能不只顶层)"
+    ],
+    "schema-design": [
+      "JSON Schema additionalProperties: true 是兼容真实数据多样性的逃生口",
+      "iterations 字段在不同项目里结构不同 (object vs array), 不要写死 schema",
+      "roadmap.id 用 ^[A-Z]+\\d+$ 模式 (P1/L1/A3), 字母段+数字, 简洁可索引"
+    ],
+    "ai-agnostic": [
+      "AGENTS.md 是 OpenAI Codex 等多工具通用标准, 比 CLAUDE.md 更通用",
+      "Cursor 用 .cursor/rules/*.mdc 格式 (含 frontmatter alwaysApply: true)",
+      "同一份 INTEL → 多种规则文件格式输出 = 真正的 AI agnostic"
+    ],
+    "claude-code-worktree": [
+      "Claude Code v2.1.49+ 原生 worktree (claude -w name) 是会话级隔离, 跟 Agent tool isolation:worktree 互补",
+      "改动 >5 文件 / 跨模块 / 长实验 → 必须先 claude -w 切原生 worktree",
+      ".claude/worktrees/ 必须 .gitignore (R13)"
+    ]
+  },
+  "bugs": {
+    "templates-gitignore-self-pollution": {
+      "types": [
+        "templates/.gitignore 含 'CLAUDE.md', 同时屏蔽 templates/CLAUDE.md 自己进 cogmap repo"
+      ],
+      "count": 1,
+      "lessons": [
+        "templates 内的配置文件必须改名后缀 (_gitignore) 避免对 cogmap repo 自身生效",
+        "init.mjs 用 FILENAME_REWRITES 表在 copy 时改回 .gitignore"
+      ]
+    },
+    "gitignore-no-anchor": {
+      "types": [
+        "顶层 .gitignore 写 'CLAUDE.md' 没有 / 前缀, glob 全局匹配, 把 packages/cli/templates/CLAUDE.md 也屏蔽了"
+      ],
+      "count": 1,
+      "lessons": [
+        ".gitignore 想只匹配仓库根的文件, 必须用 / 前缀: /CLAUDE.md",
+        "无 / 的 pattern 是全局 glob, 会匹配任何子目录同名文件"
+      ]
+    },
+    "schema-iterations-rigid": {
+      "types": [
+        "schema 写死 iterations 每个 value 必须 array, 真实数据有 object 结构, validate 全部失败"
+      ],
+      "count": 1,
+      "lessons": [
+        "schema 设计预留逃生口: additionalProperties: true 兼容数据多样",
+        "v0.1.1 修复, 真实 INTEL 现在 validate 通过"
+      ]
+    },
+    "node-test-syntax": {
+      "types": [
+        "Node 25 不支持 'node --test test/' (目录形式), 必须 'node --test test/*.test.mjs' 或具体文件",
+        "test() 的 callback 用 await import() 必须声明 async, 否则 SyntaxError 'Unexpected reserved word'"
+      ],
+      "count": 2,
+      "lessons": [
+        "node --test 跨版本兼容: 直接指定文件路径最稳",
+        "callback 用 await 必须 async, 且要在 import 顶部统一声明依赖"
+      ]
+    }
+  },
+  "iterations": {
+    "v0.1.0": {
+      "date": "2026-04-25",
+      "summary": "首发 — Phase 0 + 1 + 2 完成. cogmap-core@0.1.0 + create-cogmap@0.1.0 publish 到 npm. 13 文件 template + 5 scripts + INTEL schema."
+    },
+    "v0.1.1": {
+      "date": "2026-04-26",
+      "summary": "schema iterations 兼容真实数据 + 适配 Claude Code v2.1.49+ 原生 worktree (R13 + parallel-features SKILL + doctor 加 worktree 检查 + .gitignore 加 .claude/worktrees/)"
+    },
+    "v0.1.2": {
+      "date": "2026-04-27",
+      "summary": "AI agnostic 跨工具同步 (sync-intel-to-cursor-rules + sync-intel-to-agents-md) + file:// 本地模式 (无后端可用) + GitHub Actions CI + 10 个 smoke 测试 + cogmap dogfood 自己用 file:// 模式管 INTEL"
+    }
+  },
+  "guide": {
+    "publish-checklist": [
+      "1. 跑 npm test (10 项 smoke 全过)",
+      "2. bump version (core 或 cli 的 package.json)",
+      "3. 更新 CHANGELOG.md",
+      "4. commit + push GitHub",
+      "5. 用户生成 npm token (Granular + Bypass 2FA + 所有包)",
+      "6. npm config set //registry.npmjs.org/:_authToken=<token>",
+      "7. cd packages/<core 或 cli> && npm publish --access=public",
+      "8. sleep 8s 等 CDN 同步, 然后 npx --yes <package>@latest test 验证",
+      "9. 用户 revoke token"
+    ],
+    "file-mode-vs-https-mode": [
+      "file:// 模式: 适合个人项目 / 起步 / 离线开发. 配 api_base: file://./INTEL.json. 不需要 COGMAP_API_KEY. 限制: 不跨设备同步, 不跨 AI 工具协作.",
+      "HTTPS 模式: 适合团队 / 多设备 / 多 AI 工具协作. 需要后端 (Express + DB + ajv schema). 推荐用 map-api 项目模板自部署."
+    ]
+  },
+  "recipes": [],
+  "roadmap": [
+    {
+      "id": "P1",
+      "category": "release",
+      "title": "v0.1.0 首发 (cogmap-core + create-cogmap)",
+      "priority": "p0",
+      "status": "done",
+      "completed_at": "2026-04-25"
+    },
+    {
+      "id": "P2",
+      "category": "release",
+      "title": "v0.1.1 schema fix + Claude Code worktree 整合",
+      "priority": "p0",
+      "status": "done",
+      "completed_at": "2026-04-26"
+    },
+    {
+      "id": "P3",
+      "category": "release",
+      "title": "v0.1.2 AI agnostic + file:// 本地模式 + CI",
+      "priority": "p0",
+      "status": "in_progress",
+      "notes": "代码完成, 待 publish (用户 token)"
+    },
+    {
+      "id": "Q1",
+      "category": "ecosystem",
+      "title": "cogmap-mcp — 暴露 INTEL 为 MCP server, 让 Cursor/Continue/Cline 通过 MCP 协议直接用",
+      "priority": "p1",
+      "status": "proposed"
+    },
+    {
+      "id": "Q2",
+      "category": "robustness",
+      "title": "L3 失败自修复 retry agent — subagent 失败 ≥3 次自动降级 / 报警",
+      "priority": "p1",
+      "status": "proposed"
+    },
+    {
+      "id": "Q3",
+      "category": "testing",
+      "title": "L5 视觉 baseline diff — chrome MCP 截图基线对比, 防 UI 回退",
+      "priority": "p1",
+      "status": "proposed"
+    },
+    {
+      "id": "Q4",
+      "category": "data",
+      "title": "C2 lessons 加 tags 字段 + migration, 提升 by-task 切片精度",
+      "priority": "p1",
+      "status": "proposed"
+    },
+    {
+      "id": "Q5",
+      "category": "data",
+      "title": "C3 rules 加 applies_to 字段 (frontend/backend/all/skills/methodology)",
+      "priority": "p1",
+      "status": "proposed"
+    },
+    {
+      "id": "Q6",
+      "category": "performance",
+      "title": "P-6 lessons token 切片优化 — 单次拉取从 50KB 降到 5KB",
+      "priority": "p2",
+      "status": "proposed"
+    },
+    {
+      "id": "Q7",
+      "category": "docs",
+      "title": "docs/QUICKSTART.md + docs/HOSTING-INTEL.md + docs/WRITING-SKILLS.md — 5 分钟上手教程 + INTEL 后端搭建选项 + SKILL.md 最佳实践",
+      "priority": "p1",
+      "status": "proposed"
+    },
+    {
+      "id": "Q8",
+      "category": "ecosystem",
+      "title": "release-it 集成 + 自动版本号 bump + 自动推 git tag 触发 publish workflow",
+      "priority": "p2",
+      "status": "proposed"
+    }
+  ],
+  "session_handoff": {
+    "_note": "cogmap 项目自身的会话交接信息 — 接手 AI 必读",
+    "core_goals": [
+      "让 AI 协作本身工程化 — 跨对话/跨工具/跨项目的项目记忆协议",
+      "三层架构: 项目记忆 (HTTPS API) + 全链路 Agent (SKILL.md) + 跨项目复用 (npm 包 + CLI)",
+      "AI agnostic — 不锁定 Claude, 任何 AI 工具都能消费同一份 INTEL"
+    ],
+    "current_state": "v0.1.2 代码 ready, 待 publish. v0.1.1 已上线 npm.",
+    "github": "https://github.com/bigboy125/cogmap",
+    "npm": ["cogmap-core (0.1.1)", "create-cogmap (0.1.1)"],
+    "next_session_first_action": "cd /Users/laoluo/老罗的项目/cogmap && npm test (验证 10 个 smoke 通过) + node packages/cli/src/cli.mjs version (验证 CLI ok)"
+  },
+  "app_meta": {
+    "name": "CogMap",
+    "tagline": "让 AI 协作本身工程化",
+    "license": "MIT",
+    "author": "bigboy125",
+    "since": "2026-04-25"
+  },
+  "timeline": [
+    { "ts": "2026-04-25T13:00:00Z", "kind": "release", "summary": "v0.1.0 首发" },
+    { "ts": "2026-04-26T17:00:00Z", "kind": "release", "summary": "v0.1.1 schema fix + worktree" },
+    { "ts": "2026-04-27T15:00:00Z", "kind": "milestone", "summary": "v0.1.2 代码 ready: AI agnostic + file:// 模式 + CI" }
+  ]
+}

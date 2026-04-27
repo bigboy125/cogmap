@@ -120,6 +120,72 @@ test('check-bug-history matches keyword across nodes', async () => {
   }
 })
 
+test('file:// mode getIntel reads local JSON', async () => {
+  const tmpFile = `/tmp/cogmap-test-intel-${Date.now()}.json`
+  fs.writeFileSync(tmpFile, JSON.stringify({
+    _schema_version: 2,
+    rules: [{ text: 'test rule', critical: true }],
+    recipes: [{ id: 'test-recipe', triggers: ['test'] }]
+  }))
+
+  // Set api_base via env to point at this file
+  const origCwd = process.cwd()
+  const origBase = process.env.COGMAP_API_BASE
+  process.env.COGMAP_API_BASE = `file://${tmpFile}`
+  try {
+    // Re-import to reset module-level cache (use ESM dynamic import)
+    const url = '../src/map-client.mjs?t=' + Date.now()
+    const { getIntel, isFileMode } = await import(url)
+    assert.equal(isFileMode(`file://${tmpFile}`), true)
+    const intel = await getIntel()
+    assert.equal(intel.rules.length, 1)
+    assert.equal(intel.rules[0].text, 'test rule')
+  } finally {
+    fs.unlinkSync(tmpFile)
+    if (origBase) process.env.COGMAP_API_BASE = origBase
+    else delete process.env.COGMAP_API_BASE
+  }
+})
+
+test('file:// mode putIntel writes local JSON', async () => {
+  const tmpFile = `/tmp/cogmap-test-put-${Date.now()}.json`
+  process.env.COGMAP_API_BASE = `file://${tmpFile}`
+  try {
+    const url = '../src/map-client.mjs?t=' + Date.now()
+    const { putIntel, getIntel } = await import(url)
+    await putIntel({ _schema_version: 2, rules: [{ text: 'r1', critical: false }] })
+    const back = await getIntel()
+    assert.equal(back.rules[0].text, 'r1')
+  } finally {
+    if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile)
+    delete process.env.COGMAP_API_BASE
+  }
+})
+
+test('file:// mode searchByTask filters locally', async () => {
+  const tmpFile = `/tmp/cogmap-test-search-${Date.now()}.json`
+  fs.writeFileSync(tmpFile, JSON.stringify({
+    _schema_version: 2,
+    rules: [
+      { text: 'iOS 白屏', critical: true },
+      { text: 'Android 推送', critical: false }
+    ],
+    bugs: { 'Home.vue': { types: ['iOS scroll bug'], count: 1 } }
+  }))
+  process.env.COGMAP_API_BASE = `file://${tmpFile}`
+  try {
+    const url = '../src/map-client.mjs?t=' + Date.now()
+    const { searchByTask } = await import(url)
+    const r = await searchByTask('iOS')
+    assert.equal(r.rules.length, 1)
+    assert.equal(r.rules[0].text, 'iOS 白屏')
+    assert.equal(Object.keys(r.bugs).length, 1)
+  } finally {
+    if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile)
+    delete process.env.COGMAP_API_BASE
+  }
+})
+
 test('get-key throws if no source found', async () => {
   const orig = process.env.COGMAP_API_KEY
   delete process.env.COGMAP_API_KEY

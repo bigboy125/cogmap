@@ -1,0 +1,6 @@
+{
+  "project_name": "cogmap",
+  "api_base": "file://./INTEL.json",
+  "api_key_env": "COGMAP_API_KEY",
+  "_doc": "cogmap 自己 dogfood — 用 file:// 模式管理自身项目记忆"
+}

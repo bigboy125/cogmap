@@ -4,6 +4,13 @@
 
 ### `cogmap-core@0.1.2` (待发)
 
+新增:
+- **file:// 本地模式** — `api_base: "file://./INTEL.json"` 直接读写本地 JSON, 无需后端
+  - 适合个人/起步/离线场景
+  - `getIntel` / `putIntel` / `patchRoadmap` / `searchByTask` 全部支持 file:// 模式
+  - searchByTask 在 file:// 模式下做客户端 OR 检索 (rules + lessons + bugs + recipes)
+- 新导出: `isFileMode(base)` 帮助函数
+
 ### `create-cogmap@0.1.2` (待发)
 
 新增:
@@ -23,7 +30,9 @@
 工程:
 - GitHub Actions CI: push/PR 自动跑测试 (Node 18/20/22 矩阵)
 - GitHub Actions Publish: 推 tag `core-v0.1.2` 或 `cli-v0.1.2` 自动 publish (需配置 `NPM_TOKEN` secret)
-- `packages/core/test/smoke.test.mjs` — 7 个 smoke test 覆盖 schema / match-recipe / check-bug-history / get-key
+- `packages/core/test/smoke.test.mjs` — 10 个 smoke test 覆盖 schema / match-recipe / check-bug-history / get-key / file:// mode (3 项)
+- doctor 命令支持 file:// 协议 (不要求 COGMAP_API_KEY, 验证 INTEL 文件存在)
+- cogmap repo 自己 dogfood: 顶层 .cogmap.json + INTEL.json 用 file:// 模式管理项目记忆
 
 ---
 
