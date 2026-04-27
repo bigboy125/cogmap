@@ -186,8 +186,9 @@
       "category": "ecosystem",
       "title": "cogmap-mcp — 暴露 INTEL 为 MCP server, 让 Cursor/Continue/Cline 通过 MCP 协议直接用",
       "priority": "p1",
-      "status": "in_progress",
-      "notes": "包代码完成 (packages/mcp-server v0.1.0 待首发), 7 tools, stdio JSON-RPC 不依赖 SDK. 真机验证 (Cursor/Continue/Cline) 待 publish 后做."
+      "status": "done",
+      "completed_at": "2026-04-28",
+      "notes": "Claude Code 真机验证通过. claude mcp add cogmap -s user -- npx -y cogmap-mcp 装好后, 7 个 cogmap_* 工具全部可见. 在 cogmap 项目 cwd 用 cogmap_search_by_task 搜 publish, 返回 R8 + publish-flow 2 条 lesson + applies_to=release tag, 端到端 ok. (R8 验证终点用户可见 闭环.)"
     },
     {
       "id": "Q2",
