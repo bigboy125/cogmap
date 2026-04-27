@@ -30,5 +30,19 @@
   },
   "dependencies": {
     "cogmap-core": "^0.1.0"
+  },
+  "release-it": {
+    "git": {
+      "tagName": "cli-v${version}",
+      "commitMessage": "release: create-cogmap@${version}",
+      "tagAnnotation": "create-cogmap ${version}",
+      "requireCleanWorkingDir": true,
+      "push": true
+    },
+    "npm": { "publish": false },
+    "github": { "release": false },
+    "hooks": {
+      "before:init": ["cd ../.. && npm test"]
+    }
   }
 }

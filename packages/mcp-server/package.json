@@ -34,5 +34,19 @@
   },
   "dependencies": {
     "cogmap-core": "^0.1.2"
+  },
+  "release-it": {
+    "git": {
+      "tagName": "mcp-v${version}",
+      "commitMessage": "release: cogmap-mcp@${version}",
+      "tagAnnotation": "cogmap-mcp ${version}",
+      "requireCleanWorkingDir": true,
+      "push": true
+    },
+    "npm": { "publish": false },
+    "github": { "release": false },
+    "hooks": {
+      "before:init": ["cd ../.. && npm test"]
+    }
   }
 }

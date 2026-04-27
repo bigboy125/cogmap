@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+### 工程
+
+- **release-it 集成 (Q8)**: 三包 monorepo 一键 release 流程
+  - root devDep `release-it@^20`
+  - 各包 `package.json` 加 `release-it` 字段, tag prefix 区分 (`core-v` / `cli-v` / `mcp-v`)
+  - root scripts: `npm run release:core` / `release:cli` / `release:mcp`
+  - 配 `npm.publish=false` (publish 仍由 GH Actions tag-trigger 或手动负责), `before:init` 跑 `npm test`
+  - 用法: `npm run release:core` → 提示 bump → 自动 commit + tag + push → 触发 publish.yml
+- **rules `applies_to` 字段 dogfood (Q5)**: cogmap 自身 INTEL 8 条 rule 全部填充, 域用 `release` / `schema` / `api` / `packaging` / `templates` / `all`. (schema 早已支持, 本次落数据.)
+
+### 路线图状态校正
+
+- Q4 lessons tags: proposed → **blocked** (本轮发现需 consumer 重构 + schema 双形态兼容, 至少 1.5h, 留待下轮)
+- Q5 / Q7 / Q8: → **done**
+
 ## [0.1.2] — 2026-04-27
 
 三包同日发布: `cogmap-core@0.1.2` + `create-cogmap@0.1.2` + `cogmap-mcp@0.1.0`(新包首发).

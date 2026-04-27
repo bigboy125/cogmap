@@ -4,35 +4,43 @@
   "rules": [
     {
       "text": "【R1 交付前必须 E2E 自测】发布前 npm test 必须全过 + 真实 npx create-cogmap 拉公开包验证",
-      "critical": true
+      "critical": true,
+      "applies_to": ["release", "all"]
     },
     {
       "text": "【R2 grep 验证】改 schema / API 路径前必须 grep 现有用法,确保兼容",
-      "critical": true
+      "critical": true,
+      "applies_to": ["schema", "api"]
     },
     {
       "text": "【R7 任务结束前 git status 自查】commit 前必须 git status, 不留遗漏",
-      "critical": true
+      "critical": true,
+      "applies_to": ["all"]
     },
     {
       "text": "【R8 验证终点用户可见】npm publish 后必须 npx 拉公开包跑通, 不是本地 link 跑过即算",
-      "critical": true
+      "critical": true,
+      "applies_to": ["release"]
     },
     {
       "text": "【npm scoped vs unscoped】坚持 unscoped (cogmap-core / create-cogmap), 不绑定 org",
-      "critical": false
+      "critical": false,
+      "applies_to": ["release", "packaging"]
     },
     {
       "text": "【templates 内 .gitignore 必须改名 _gitignore】否则会影响 cogmap repo 自己的 git tracking",
-      "critical": true
+      "critical": true,
+      "applies_to": ["packaging", "templates"]
     },
     {
       "text": "【顶层 .gitignore CLAUDE.md 必须 / 前缀】否则会同时屏蔽 templates/CLAUDE.md, 导致模板进不了 repo",
-      "critical": true
+      "critical": true,
+      "applies_to": ["packaging", "templates"]
     },
     {
       "text": "【push 后 wait > 5s 才能 npx --yes pull】npm registry CDN 同步有延迟, smoke 验证前 sleep 8s 比较稳",
-      "critical": false
+      "critical": false,
+      "applies_to": ["release"]
     }
   ],
   "lessons": {
@@ -192,14 +200,17 @@
       "category": "data",
       "title": "C2 lessons 加 tags 字段 + migration, 提升 by-task 切片精度",
       "priority": "p1",
-      "status": "proposed"
+      "status": "blocked",
+      "notes": "本轮发现需 schema 双形态兼容 (string | {text,tags}) + consumer 重构 (check-bug-history.mjs:26 + map-client.mjs:138 + audit.mjs 都假设 string item). 不是 30min 工, 至少 1.5h. 留待下轮."
     },
     {
       "id": "Q5",
       "category": "data",
       "title": "C3 rules 加 applies_to 字段 (frontend/backend/all/skills/methodology)",
       "priority": "p1",
-      "status": "proposed"
+      "status": "done",
+      "completed_at": "2026-04-27",
+      "notes": "schema 早已支持 applies_to (intel.schema.json:22-26), 本次 dogfood 把 cogmap 自身 8 条 rule 全部填充, 用 release/schema/api/packaging/templates/all 共 6 个域."
     },
     {
       "id": "Q6",
@@ -213,14 +224,18 @@
       "category": "docs",
       "title": "docs/QUICKSTART.md + docs/HOSTING-INTEL.md + docs/WRITING-SKILLS.md — 5 分钟上手教程 + INTEL 后端搭建选项 + SKILL.md 最佳实践",
       "priority": "p1",
-      "status": "proposed"
+      "status": "done",
+      "completed_at": "2026-04-27",
+      "notes": "三件套已落地: docs/QUICKSTART.md + docs/WRITING-SKILLS.md + docs/HOSTING-INTEL.md, examples/server-minimal 配套示例可跑."
     },
     {
       "id": "Q8",
       "category": "ecosystem",
       "title": "release-it 集成 + 自动版本号 bump + 自动推 git tag 触发 publish workflow",
       "priority": "p2",
-      "status": "proposed"
+      "status": "done",
+      "completed_at": "2026-04-27",
+      "notes": "release-it@20 添加为 root devDep, 三包各自 package.json 配 release-it 字段 (tag prefix core-v/cli-v/mcp-v), 根 npm scripts release:core/cli/mcp. 配 npm.publish=false (publish 走 GH Actions tag-trigger 或手动). before:init hook 跑 npm test."
     }
   ],
   "session_handoff": {
@@ -248,6 +263,7 @@
     { "ts": "2026-04-27T15:00:00Z", "kind": "milestone", "summary": "v0.1.2 代码 ready: AI agnostic + file:// 模式 + CI" },
     { "ts": "2026-04-27T22:00:00Z", "kind": "docs", "summary": "archive/ 整理 (explainers + plans + handoffs + briefs) + HANDOFF.md 顶层入口 + .gitignore archive/" },
     { "ts": "2026-04-27T23:30:00Z", "kind": "ci", "summary": "publish.yml 加 mcp-v* tag handler, 三包 tag-trigger publish 全打通 + Q1 状态校正 (proposed → in_progress)" },
-    { "ts": "2026-04-27T23:50:00Z", "kind": "release", "summary": "v0.1.2 三包 publish: cogmap-core@0.1.2 + create-cogmap@0.1.2 + cogmap-mcp@0.1.0(首发). npx cogmap-mcp 启动验证 ok." }
+    { "ts": "2026-04-27T23:50:00Z", "kind": "release", "summary": "v0.1.2 三包 publish: cogmap-core@0.1.2 + create-cogmap@0.1.2 + cogmap-mcp@0.1.0(首发). npx cogmap-mcp 启动验证 ok." },
+    { "ts": "2026-04-28T00:30:00Z", "kind": "feature", "summary": "Q5+Q7+Q8 done: rules applies_to 8 条 dogfood 填充 + release-it@20 三包 monorepo 集成 + Q7 docs 三件套状态校正. Q4 标 blocked (lessons tags 需 consumer 重构, 留待下轮)." }
   ]
 }

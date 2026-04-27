@@ -8,7 +8,10 @@
   ],
   "scripts": {
     "test": "node --test packages/core/test/smoke.test.mjs",
-    "lint": "echo 'no linter yet'"
+    "lint": "echo 'no linter yet'",
+    "release:core": "cd packages/core && npx --no-install release-it",
+    "release:cli": "cd packages/cli && npx --no-install release-it",
+    "release:mcp": "cd packages/mcp-server && npx --no-install release-it"
   },
   "repository": {
     "type": "git",
@@ -26,5 +29,8 @@
   "license": "MIT",
   "engines": {
     "node": ">=18"
+  },
+  "devDependencies": {
+    "release-it": "^20.0.1"
   }
 }
