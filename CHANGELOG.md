@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.1.3] — 2026-04-28
+
+三包同日发布: `cogmap-core@0.1.3` + `create-cogmap@0.1.3` + `cogmap-mcp@0.1.1`.
+
+路线图 11/11 全部 done (Q1-Q8). 本次发版整合 Q2/Q3/Q4/Q5/Q6/Q7/Q8 七项收尾工作.
+
 ### `cogmap-core` 新模块 (Q4 lessons tags)
 
 - **`lesson-utils.mjs`**: lessons 双形态兼容工具

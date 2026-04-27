@@ -1,6 +1,6 @@
 {
   "name": "create-cogmap",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "CogMap 脚手架 — 一行命令初始化 CogMap 项目 (npx create-cogmap my-project, 兼容 Claude Code v2.1.49+ 原生 worktree, 支持 Cursor/Codex/Aider 跨工具同步)",
   "type": "module",
   "bin": {

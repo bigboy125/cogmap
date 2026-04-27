@@ -1,6 +1,6 @@
 {
   "name": "cogmap-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CogMap MCP server — 把 INTEL 暴露成 Model Context Protocol tools, 任何 MCP 客户端 (Claude Code / Cursor / Continue / Cline / Zed) 都能用",
   "type": "module",
   "main": "./src/server.mjs",

@@ -34,7 +34,7 @@ import {
 const PROTOCOL_VERSION = '2024-11-05'
 const SERVER_INFO = {
   name: 'cogmap-mcp',
-  version: '0.1.0'
+  version: '0.1.1'
 }
 
 // ============ Tool 定义 ============
