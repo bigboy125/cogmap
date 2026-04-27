@@ -14,13 +14,11 @@ CogMap 是一份让 AI 真正"记得"你的项目，并能"自己干完一件事
 
 | 包 | 状态 | 用途 |
 |---|---|---|
-| [`cogmap-core`](./packages/core) | 0.1.2 已上线 / **0.1.3 代码 ready 待发** | 协议核心：HTTPS 客户端 + file:// 本地模式 + JSON Schema + lesson-utils + match-failure-precedent + log-retry |
-| [`create-cogmap`](./packages/cli) | 0.1.2 已上线 / **0.1.3 代码 ready 待发** | 脚手架 CLI：`npx create-cogmap my-project` |
-| [`cogmap-mcp`](./packages/mcp-server) | 0.1.0 已上线 / **0.1.1 代码 ready 待发** | MCP server：8 个工具暴露给 Claude Code / Cursor / Continue / Cline / Zed |
+| [`cogmap-core`](./packages/core) | **0.1.3 已上线** | 协议核心：HTTPS 客户端 + file:// 本地模式 + JSON Schema + lesson-utils + match-failure-precedent + log-retry |
+| [`create-cogmap`](./packages/cli) | **0.1.3 已上线** | 脚手架 CLI：`npx create-cogmap my-project` |
+| [`cogmap-mcp`](./packages/mcp-server) | **0.1.1 已上线** | MCP server：8 个工具暴露给 Claude Code / Cursor / Continue / Cline / Zed |
 | `cogmap-server-minimal` (示例) | examples/ | 可运行的 INTEL 后端实现，5 分钟起服务 |
 | `examples/visual-baseline/` | examples/ | (Q3) pixelmatch 视觉 baseline diff 配方, 防 UI 回退 |
-
-**v0.1.3 publish 状态**: 3 个 git tag 已推 (core-v0.1.3 / cli-v0.1.3 / mcp-v0.1.1), GitHub Actions CI 触发但权限不足 fail. 待用户修 NPM_TOKEN secret 或本地手动 publish. 详见 INTEL.session_handoff.publish_pending.
 
 ## 5 分钟上手
 
