@@ -1,7 +1,7 @@
 {
   "name": "create-cogmap",
-  "version": "0.1.0",
-  "description": "CogMap 脚手架 — 一行命令初始化 CogMap 项目 (npx create-cogmap my-project)",
+  "version": "0.1.1",
+  "description": "CogMap 脚手架 — 一行命令初始化 CogMap 项目 (npx create-cogmap my-project, 兼容 Claude Code v2.1.49+ 原生 worktree)",
   "type": "module",
   "bin": {
     "create-cogmap": "./src/cli.mjs",

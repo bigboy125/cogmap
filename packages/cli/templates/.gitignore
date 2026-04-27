@@ -17,3 +17,6 @@ CLAUDE.md
 
 # 临时缓存
 .cogmap-cache/
+
+# Claude Code v2.1.49+ 原生 worktree 目录(每个 worktree 是临时工作树, 不入主 repo git)
+.claude/worktrees/

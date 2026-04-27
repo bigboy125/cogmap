@@ -13,3 +13,6 @@ coverage/
 # CogMap auto-injected files
 CLAUDE.md
 .cogmap-cache/
+
+# Claude Code v2.1.49+ 原生 worktree (临时工作树, 不入主 repo, R13)
+.claude/worktrees/

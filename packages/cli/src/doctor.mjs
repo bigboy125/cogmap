@@ -77,7 +77,37 @@ export async function runDoctor() {
     checks.push({ ok: false, msg: `COGMAP_API_KEY env not set (writes will fail)` })
   }
 
-  // 6. INTEL 端点连通性
+  // 6. .claude/worktrees/ 检查(Claude Code v2.1.49+ 原生 worktree)
+  const worktreesDir = path.join(cwd, '.claude', 'worktrees')
+  if (fs.existsSync(worktreesDir)) {
+    const wts = fs.readdirSync(worktreesDir, { withFileTypes: true }).filter((d) => d.isDirectory())
+    if (wts.length === 0) {
+      checks.push({ ok: true, msg: `.claude/worktrees/: empty (clean)` })
+    } else {
+      const names = wts.map((d) => d.name).join(', ')
+      // 提示但不算失败 — worktree 是工作中的状态, 残留 ≤3 个 OK
+      checks.push({
+        ok: wts.length <= 3,
+        msg: `.claude/worktrees/: ${wts.length} active worktree(s): ${names}${wts.length > 3 ? ' ⚠️ 建议清理 (git worktree remove)' : ''}`
+      })
+    }
+  } else {
+    checks.push({ ok: true, msg: `.claude/worktrees/: not yet created (will be on first \`claude -w <name>\`)` })
+  }
+
+  // 7. .gitignore 含 .claude/worktrees/ 模式(R13)
+  const gitignorePath = path.join(cwd, '.gitignore')
+  if (fs.existsSync(gitignorePath)) {
+    const gi = fs.readFileSync(gitignorePath, 'utf-8')
+    const hasWorktreeIgnore = /^\s*\.claude\/worktrees\/?\s*$/m.test(gi) ||
+                              /^\s*\.claude\/worktrees\/\*\*?\s*$/m.test(gi)
+    checks.push({
+      ok: hasWorktreeIgnore,
+      msg: `.gitignore .claude/worktrees/ rule: ${hasWorktreeIgnore ? '✓' : 'missing (R13: 防 worktree 入主 repo)'}`
+    })
+  }
+
+  // 8. INTEL 端点连通性
   let cfg = null
   try {
     cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf-8'))
