@@ -1,0 +1,37 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [18, 20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm install
+      - name: Test cogmap-core
+        run: cd packages/core && node --test test/smoke.test.mjs
+      - name: Smoke test create-cogmap CLI
+        run: |
+          node packages/cli/src/cli.mjs version
+          node packages/cli/src/cli.mjs --help
+          rm -rf /tmp/ci-cogmap-test
+          node packages/cli/src/cli.mjs init /tmp/ci-cogmap-test --no-git
+          test -f /tmp/ci-cogmap-test/.cogmap.json
+          test -f /tmp/ci-cogmap-test/.gitignore
+          test -f /tmp/ci-cogmap-test/CLAUDE.md
+          test -f /tmp/ci-cogmap-test/.claude/settings.json
+          test -f /tmp/ci-cogmap-test/scripts/audit-map-coverage.mjs
+          test -f /tmp/ci-cogmap-test/scripts/sync-intel-to-cursor-rules.mjs
+          test -f /tmp/ci-cogmap-test/scripts/sync-intel-to-agents-md.mjs
+          ! test -f /tmp/ci-cogmap-test/_gitignore  # 应该被改名为 .gitignore
+          echo "✅ All template files generated correctly"

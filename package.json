@@ -7,7 +7,7 @@
     "packages/*"
   ],
   "scripts": {
-    "test": "node --test packages/core/test",
+    "test": "node --test packages/core/test/smoke.test.mjs",
     "lint": "echo 'no linter yet'"
   },
   "repository": {

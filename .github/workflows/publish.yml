@@ -1,0 +1,46 @@
+name: Publish to npm
+
+on:
+  push:
+    tags:
+      - 'core-v*'      # 推 tag core-v0.1.2 → publish cogmap-core
+      - 'cli-v*'       # 推 tag cli-v0.1.2 → publish create-cogmap
+
+jobs:
+  publish-core:
+    if: startsWith(github.ref, 'refs/tags/core-v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm install
+      - name: Test before publish
+        run: cd packages/core && node --test test/smoke.test.mjs
+      - name: Publish
+        run: cd packages/core && npm publish --access=public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-cli:
+    if: startsWith(github.ref, 'refs/tags/cli-v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm install
+      - name: Smoke test
+        run: |
+          node packages/cli/src/cli.mjs version
+          rm -rf /tmp/ci-test
+          node packages/cli/src/cli.mjs init /tmp/ci-test --no-git
+          test -f /tmp/ci-test/CLAUDE.md
+      - name: Publish
+        run: cd packages/cli && npm publish --access=public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
