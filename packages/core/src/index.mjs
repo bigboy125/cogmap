@@ -15,7 +15,8 @@ export {
   putIntel,
   patchRoadmap,
   searchByTask,
-  getApiBase
+  getApiBase,
+  isFileMode
 } from './map-client.mjs'
 
 export { getApiKey, getConfig } from './get-key.mjs'

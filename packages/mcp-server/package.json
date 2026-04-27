@@ -1,0 +1,38 @@
+{
+  "name": "cogmap-mcp",
+  "version": "0.1.0",
+  "description": "CogMap MCP server — 把 INTEL 暴露成 Model Context Protocol tools, 任何 MCP 客户端 (Claude Code / Cursor / Continue / Cline / Zed) 都能用",
+  "type": "module",
+  "main": "./src/server.mjs",
+  "bin": {
+    "cogmap-mcp": "./src/server.mjs"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "keywords": [
+    "cogmap",
+    "mcp",
+    "model-context-protocol",
+    "ai-memory",
+    "claude",
+    "cursor",
+    "continue",
+    "cline",
+    "zed"
+  ],
+  "author": "bigboy125",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bigboy125/cogmap.git",
+    "directory": "packages/mcp-server"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "cogmap-core": "^0.1.2"
+  }
+}

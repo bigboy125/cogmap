@@ -2,6 +2,23 @@
 
 ## [Unreleased]
 
+### `cogmap-mcp@0.1.0` (新包,待发)
+
+新增包. CogMap **MCP Server** — 把 INTEL 暴露成 Model Context Protocol tools, 任何 MCP 客户端 (Claude Code / Cursor / Continue / Cline / Zed) 都能用.
+
+特性:
+- 7 个 tool: cogmap_get_intel / search_by_task / check_bug_history / match_recipe / put_intel / patch_roadmap / info
+- stdio JSON-RPC 2.0, 手写最小实现 (不依赖 @modelcontextprotocol/sdk, 零额外依赖除 cogmap-core)
+- 协议版本 2024-11-05
+- 支持 file:// 和 HTTPS 两种 INTEL 后端
+- stderr 启动日志, stdout 严格 JSON-RPC (不污染协议流)
+
+冒烟测试:
+```bash
+echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}' | node packages/mcp-server/src/server.mjs
+```
+返回正确的 initialize response, 7 个 tool 全部 list 出.
+
 ### `cogmap-core@0.1.2` (待发)
 
 新增:
