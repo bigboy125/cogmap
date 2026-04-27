@@ -54,7 +54,10 @@
       { "text": "npm token 只在创建瞬间显示一次, 必须立刻 Cmd+C 复制", "tags": ["release", "credentials", "ux"] },
       { "text": "token 敏感不要在公开渠道贴, 用完立刻 revoke + 生成新的", "tags": ["security", "credentials", "ai-collab"] },
       { "text": "CLI publish 顺序: core → cli (cli 依赖 core), 第一次 publish 时 npm view 可能 404 因 CDN 同步延迟", "tags": ["release", "monorepo", "operations"] },
-      { "text": "首次发 unscoped 包要加 --access=public 防默认 private", "tags": ["release", "packaging"] }
+      { "text": "首次发 unscoped 包要加 --access=public 防默认 private", "tags": ["release", "packaging"] },
+      { "text": "npm whoami / npm config set 在 workspace 子目录里报 ENOWORKSPACES — 必须 cd ~ + 加 --location=user 强制写用户级配置", "tags": ["release", "monorepo", "operations", "debugging"] },
+      { "text": "npm publish 报 'npm error 404 not in registry' 实际是权限错误, 不是真 404. 解法: 检查 token 是 Read+Write 且选了具体包名 + Bypass 2FA", "tags": ["release", "credentials", "debugging", "error-codes"] },
+      { "text": "GitHub Actions tag-trigger publish 跑通需要 NPM_TOKEN GH secret. token 的 packages 选择必须包含全部要发的包 (不能只选 1 个), 否则 CI 报 404 fail", "tags": ["release", "ci", "credentials", "github-actions"] }
     ],
     "monorepo": [
       { "text": "npm workspaces 自动建 symlink: node_modules/<pkg> → packages/<pkg>, 跨包 import 立即生效", "tags": ["monorepo", "packaging", "tooling"] },
@@ -75,6 +78,28 @@
       { "text": "Claude Code v2.1.49+ 原生 worktree (claude -w name) 是会话级隔离, 跟 Agent tool isolation:worktree 互补", "tags": ["ai-collab", "claude-code", "workflow"] },
       { "text": "改动 >5 文件 / 跨模块 / 长实验 → 必须先 claude -w 切原生 worktree", "tags": ["ai-collab", "workflow", "git"] },
       { "text": ".claude/worktrees/ 必须 .gitignore (R13)", "tags": ["gitignore", "claude-code", "ai-collab"] }
+    ],
+    "token-security": [
+      { "text": "用户多次将 token 贴在截图/对话里 (3 次) — AI 必须主动每次都拒收 token, 引导用户自己跑 npm config set, 并立刻提醒 revoke + regen. 这是 R8 的 AI 侧操作执行细节", "tags": ["security", "credentials", "ai-collab", "ux"] },
+      { "text": "Granular token 短期 (7-30天) + 用完即焚 + revoke 即时生效 是最稳的工作流, 比长期 token 更安全", "tags": ["security", "credentials", "operations"] },
+      { "text": "AI 看到屏幕泄露 token 不要立刻让用户 revoke (会陷入'生成→泄露→revoke'循环), 优先让用户先把活干完 (publish), 完了再 revoke. 风险窗口 < 5min 可接受", "tags": ["security", "ai-collab", "pragmatism"] }
+    ],
+    "methodology-design": [
+      { "text": "L3 失败自修复: 模式驱动 ≠ 规则驱动. 不写'失败 retry 3 次'统一规则, 而是查 INTEL.bugs/lessons/retry_log 命中先例才 retry, 否则升级. 查不到先例 = 严禁猜测", "tags": ["methodology", "ai-collab", "retry", "architecture"] },
+      { "text": "AI 协作方法论的三个原则 (老罗 2026-04-28): 可视化 (留痕) + 基于过去成功的标准 (不是统一标准) + 迭代的 (越用越准)", "tags": ["methodology", "ai-collab", "philosophy"] },
+      { "text": "用户拍板方法论方向, AI 拍板技术实现. 改方法论文档 (templates/) 影响所有用户, 必须用户先认同方向 — '先 300 字设计稿点头, 再写代码'比'AI 写完返工'划算", "tags": ["methodology", "ai-collab", "process"] },
+      { "text": "做一件事前 grep 现有用法 (R2 + R9), 例: Q4 改 lessons schema 前先 grep 'intel.lessons' 找到 4 个 consumer, 才能判断破坏性改动 vs 双形态兼容", "tags": ["methodology", "schema", "debugging"] }
+    ],
+    "schema-evolution": [
+      { "text": "字段升级用 JSON Schema oneOf [old-shape, new-shape] 实现 0 breaking change. Q4 lessons items 从 string 升级到 string | {text, tags} 用此模式, 旧 INTEL 不动还能跑", "tags": ["schema", "compatibility", "api-design"] },
+      { "text": "双形态字段必须配 helper 函数统一抽取 (例 getLessonText/getLessonTags), 不允许 consumer 自己 if/else, 否则双形态污染整个 codebase", "tags": ["schema", "compatibility", "code-design"] },
+      { "text": "schema additionalProperties: true 是兼容真实数据多样性的逃生口 (v0.1.1 修 iterations 字段时学到的). 比 strict 更适合演进中的协议", "tags": ["schema", "compatibility", "api-design"] },
+      { "text": "新加的可选字段不需要 oneOf, 直接加 properties + 不进 required 即可 (例 Q2 retry_log + bugs.fix_pattern). oneOf 只用在'同位置不同形态'的场景", "tags": ["schema", "api-design"] }
+    ],
+    "session-collaboration": [
+      { "text": "用户疲劳时长答案没用, 列编号步骤 + 给具体命令 + 标'你做'/'我做' 才能推进. 不要堆解释", "tags": ["ai-collab", "ux", "communication"] },
+      { "text": "用户说'你看着办'时, AI 应该: 1) 列要做的事 2) 标我能做 vs 你必须做 3) 我能做的全做完不等确认 4) 你必须做的等指令", "tags": ["ai-collab", "process", "autonomy"] },
+      { "text": "R20 沉淀闭环具体落地: 每个会话结束前回看本次踩的坑/方法论/schema 改动, 写进 INTEL.lessons. 每条 1-2 句话 + tags. 不写满, 不写流水账", "tags": ["methodology", "ai-collab", "process"] }
     ]
   },
   "bugs": {
@@ -290,7 +315,8 @@
     { "ts": "2026-04-28T04:00:00Z", "kind": "release", "summary": "Q1 done: cogmap-mcp 真机验证完整通过 — 用户在 Claude Code 实测 cogmap_search_by_task 'publish' 返回 R8 + publish-flow 2 条 lesson + applies_to=release tag, R8 验证终点用户可见 闭环." },
     { "ts": "2026-04-28T05:00:00Z", "kind": "feature", "summary": "Q4 done: lessons 双形态 (string | {text,tags}) — schema oneOf 兼容 + lesson-utils helper + cogmap-mcp 新工具 cogmap_search_lessons_by_tags + cogmap 17 条 lesson dogfood 加 tags + 5 smoke (23/23). 真机测 search_lessons_by_tags(['release']) 准确返回 4 条 publish-flow lessons. 路线图 11/11 项收官 (除 blocked 外全 done)." },
     { "ts": "2026-04-28T06:00:00Z", "kind": "release", "summary": "v0.1.3 bump + tag 推 GitHub (core-v0.1.3 / cli-v0.1.3 / mcp-v0.1.1). 用户配置 NPM_TOKEN GH secret 用 GH Actions 自动 publish, 但 3 个 CI run 全失败 (npm 404 = token 权限不足). 待用户修 token. 代码侧已 ready, 等 publish 即可." },
-    { "ts": "2026-04-28T07:00:00Z", "kind": "release", "summary": "v0.1.3 三包手动 publish 成功: cogmap-core@0.1.3 + create-cogmap@0.1.3 + cogmap-mcp@0.1.1. npx cogmap-mcp@0.1.1 启动验证 ok (R8 闭环). 路线图 11/11 全 done + 三包齐发. cogmap 项目正式 done done." }
+    { "ts": "2026-04-28T07:00:00Z", "kind": "release", "summary": "v0.1.3 三包手动 publish 成功: cogmap-core@0.1.3 + create-cogmap@0.1.3 + cogmap-mcp@0.1.1. npx cogmap-mcp@0.1.1 启动验证 ok (R8 闭环). 路线图 11/11 全 done + 三包齐发. cogmap 项目正式 done done." },
+    { "ts": "2026-04-28T08:00:00Z", "kind": "lessons", "summary": "R20 沉淀闭环: 本会话 14 条新 lesson 入 INTEL — publish-flow +3 (ENOWORKSPACES / 404=权限 / GH Action token 配置), 4 个新 topic (token-security 3 / methodology-design 4 / schema-evolution 4 / session-collaboration 3). 用 Q4 {text,tags} 格式 dogfood. Total 17→31 lessons / 5→9 topics. cogmap_search_lessons_by_tags(['methodology']) 真机返 5 条命中, 沉淀闭环跑通." }
   ],
   "retry_log": []
 }
