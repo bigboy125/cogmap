@@ -49,13 +49,30 @@
     {
       "text": "【需求自动出方案+测试用例】用户提需求后第一步必须探查 3 来源(本地 grep + INTEL 节点 lessons/bugs + git log -5)→ 产出方案 + 测试用例给用户 review,确认后才动手",
       "critical": true
+    },
+    {
+      "text": "【R14 模式驱动 retry】subagent 失败必须先用 matchFailurePrecedent 查 INTEL.bugs/lessons/retry_log 命中先例才能 retry, 没命中立即升级到用户/主对话. 严禁凭空发明修复方式. 每次重试 logRetry 留痕. 同签名 ≥3 次强制升级.",
+      "critical": true,
+      "applies_to": ["retry", "all"]
     }
   ],
   "lessons": {},
   "bugs": {},
+  "retry_log": [],
   "iterations": {},
   "guide": {},
-  "recipes": [],
+  "recipes": [
+    {
+      "id": "retry-on-failure",
+      "scenario": "subagent / 命令执行失败时, 模式驱动地决定 retry 还是升级 (L3 失败自修复)",
+      "triggers": ["失败", "retry", "重试", "TypeError", "TestFailure", "BuildError", "LintError", "error", "失败自修复"],
+      "files": [".claude/skills/retry-on-failure/SKILL.md"],
+      "skill_path": ".claude/skills/retry-on-failure/SKILL.md",
+      "confidence": "high — 基于 R14 强制规范",
+      "estimatedTime": "5-15min per retry",
+      "lessons_to_obey": ["R14 模式驱动 retry"]
+    }
+  ],
   "roadmap": [
     {
       "id": "P1",

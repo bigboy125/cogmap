@@ -2,6 +2,29 @@
 
 ## [Unreleased]
 
+### `cogmap-core` 新模块 (Q2 L3 失败自修复)
+
+- **`match-failure-precedent.mjs`**: 错误文本 → 在 INTEL.bugs/lessons/retry_log 里查相似先例 → 返回最高分 fix_pattern 或 null
+  - 中英混合切词 + Jaccard 相似度
+  - 优先级: retry_log success (1.1x boost) > bug (1.0x) > lesson (0.8x discount)
+  - 默认 threshold 0.15, 可调
+  - 命中 null 时调用方必须升级 (R14), 不允许凭空猜测
+- **`log-retry.mjs`**: 把 retry 尝试写进 INTEL.retry_log + 计算同签名累计次数
+  - 同步 (传 intel) / 异步 (自动 get/put) 两种模式
+  - countAttemptsForSignature: 关键词 ≥50% 重叠视为同签名, 用于 R14 的 ≤3 上限
+- 5 个 smoke test 覆盖 (18/18 全过)
+- **设计哲学** (老罗 2026-04-28): 模式驱动 ≠ 规则驱动. retry 必须查过去成功的修复, 不允许 AI 凭空发明. 可视化 (retry_log) + 迭代 (越用越准).
+
+### Schema 扩展
+
+- `intel.schema.json` 顶层加 `retry_log` 数组 (L3 留痕日志, 含 ts/failure_signature/matched_precedent/fix_applied/outcome/attempt_n)
+- `bugs[id]` 加 `fix_pattern` 可选字段 (可复用的修复模板, 比 lessons 更显式)
+
+### Templates 更新
+
+- `templates/INTEL.json` 加 R14 (模式驱动 retry 强制规范) + retry-on-failure recipe + retry_log 空数组
+- `templates/.claude/skills/retry-on-failure/SKILL.md` 新增 — L3 五步流程文档 (提取签名 → 查先例 → 套用/升级 → 重跑 → logRetry 留痕)
+
 ### `cogmap-core` API 扩展
 
 - **`searchByTask(query, opts)` Q6 token 切片优化**: 新增 3 个可选参数, 默认行为保持兼容

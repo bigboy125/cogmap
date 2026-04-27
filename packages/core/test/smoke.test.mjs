@@ -278,6 +278,128 @@ test('Q6: searchByTask fields filter hides categories', async () => {
   }
 })
 
+test('Q2 L3: matchFailurePrecedent hits bug with fix_pattern', async () => {
+  const { matchFailurePrecedent } = await import('../src/match-failure-precedent.mjs')
+  const intel = {
+    bugs: {
+      'gitignore-no-anchor': {
+        types: ['顶层 .gitignore 写 CLAUDE.md 没有 / 前缀, 全局匹配屏蔽 templates/CLAUDE.md'],
+        count: 1,
+        fix_pattern: '把 CLAUDE.md 改成 /CLAUDE.md, 用 / 前缀 anchor 到仓库根',
+        lessons: ['.gitignore 想只匹配仓库根的文件, 必须用 / 前缀']
+      },
+      'unrelated-bug': {
+        types: ['something completely different about hero parallax'],
+        count: 1
+      }
+    }
+  }
+  const m = await matchFailurePrecedent(
+    'gitignore CLAUDE.md 没有 anchor 把 templates 也屏蔽了 模板进不了 repo',
+    { intel, threshold: 0.1 }
+  )
+  assert.ok(m, 'should hit a precedent')
+  assert.equal(m.kind, 'bug')
+  assert.equal(m.id, 'gitignore-no-anchor')
+  assert.ok(m.fix_pattern.includes('/ 前缀'), `fix_pattern should mention prefix anchor: ${m.fix_pattern}`)
+})
+
+test('Q2 L3: matchFailurePrecedent prefers retry_log success over lesson', async () => {
+  const { matchFailurePrecedent } = await import('../src/match-failure-precedent.mjs')
+  const intel = {
+    bugs: {},
+    retry_log: [
+      {
+        ts: '2026-04-28T10:00:00Z',
+        outcome: 'success',
+        failure_signature: {
+          error_type: 'TestFailure',
+          keywords: ['snapshot', 'mismatch', 'redux']
+        },
+        fix_applied: '更新 snapshot: npm test -- -u'
+      }
+    ],
+    lessons: {
+      'general-testing': ['snapshot mismatch 可能是预期行为, 也可能是回归, 看 diff']
+    }
+  }
+  const m = await matchFailurePrecedent('TestFailure snapshot mismatch redux store', {
+    intel,
+    threshold: 0.1
+  })
+  assert.ok(m, 'should match')
+  assert.equal(m.kind, 'retry_log', 'retry_log success should outrank lesson (1.1x boost vs 0.8x discount)')
+  assert.ok(m.fix_pattern.includes('snapshot'), m.fix_pattern)
+})
+
+test('Q2 L3: matchFailurePrecedent returns null on novel error', async () => {
+  const { matchFailurePrecedent } = await import('../src/match-failure-precedent.mjs')
+  const intel = {
+    bugs: { 'a': { types: ['完全不相关的 bug'], count: 1 } },
+    lessons: { 'random': ['totally unrelated wisdom'] }
+  }
+  const m = await matchFailurePrecedent(
+    'TypeError Cannot read properties of undefined reading foo bar baz',
+    { intel, threshold: 0.15 }
+  )
+  assert.equal(m, null, 'novel error should return null → R14 要求升级, 不许凭空发明')
+})
+
+test('Q2 L3: logRetry appends to INTEL.retry_log + countAttemptsForSignature', async () => {
+  const { logRetry, countAttemptsForSignature } = await import('../src/log-retry.mjs')
+  const intel = {}
+
+  const sig = { error_type: 'BuildError', keywords: ['typescript', 'tsx', 'jsx'] }
+
+  await logRetry({
+    failure_signature: sig,
+    matched_precedent: { kind: 'bug', id: 'tsx-jsx-config', fix_pattern: '改 tsconfig jsx=react' },
+    fix_applied: '改 tsconfig jsx 设置',
+    outcome: 'success',
+    attempt_n: 1
+  }, { intel })
+
+  await logRetry({
+    failure_signature: { error_type: 'BuildError', keywords: ['typescript', 'tsx', 'jsx'] },
+    fix_applied: '清 cache',
+    outcome: 'failure',
+    attempt_n: 2
+  }, { intel })
+
+  await logRetry({
+    failure_signature: { error_type: 'TestFailure', keywords: ['snapshot'] },
+    outcome: 'escalated',
+    attempt_n: 1
+  }, { intel })
+
+  assert.equal(intel.retry_log.length, 3, '3 entries logged')
+  assert.equal(intel.retry_log[0].outcome, 'success')
+  assert.ok(intel.retry_log[0].ts, 'ts auto-filled')
+
+  // count attempts for "BuildError + tsx/jsx" 应该是 2 (前两条同签名)
+  const count = await countAttemptsForSignature(sig, { intel })
+  assert.equal(count, 2, 'BuildError tsx/jsx 应累计 2 次')
+
+  // 不同签名应该是 1
+  const count2 = await countAttemptsForSignature(
+    { error_type: 'TestFailure', keywords: ['snapshot'] },
+    { intel }
+  )
+  assert.equal(count2, 1)
+})
+
+test('Q2 L3: logRetry throws on missing required fields', async () => {
+  const { logRetry } = await import('../src/log-retry.mjs')
+  await assert.rejects(
+    () => logRetry({ outcome: 'success' }, { intel: {} }),
+    /failure_signature 必填/
+  )
+  await assert.rejects(
+    () => logRetry({ failure_signature: { error_type: 'X' } }, { intel: {} }),
+    /outcome 必须是/
+  )
+})
+
 test('get-key throws if no source found', async () => {
   const orig = process.env.COGMAP_API_KEY
   delete process.env.COGMAP_API_KEY

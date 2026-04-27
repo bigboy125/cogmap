@@ -11,6 +11,8 @@
     "./validate": "./src/validate.mjs",
     "./match-recipe": "./src/match-recipe.mjs",
     "./check-bug-history": "./src/check-bug-history.mjs",
+    "./match-failure-precedent": "./src/match-failure-precedent.mjs",
+    "./log-retry": "./src/log-retry.mjs",
     "./schemas/intel": "./schemas/intel.schema.json"
   },
   "files": [

@@ -41,6 +41,11 @@
       "text": "【push 后 wait > 5s 才能 npx --yes pull】npm registry CDN 同步有延迟, smoke 验证前 sleep 8s 比较稳",
       "critical": false,
       "applies_to": ["release"]
+    },
+    {
+      "text": "【R14 模式驱动 retry】subagent 失败必须先用 matchFailurePrecedent 查 INTEL.bugs/lessons/retry_log 命中先例才能 retry, 没命中立即升级到用户/主对话. 严禁凭空发明修复方式. 每次重试 logRetry 留痕. 同签名 ≥3 次强制升级.",
+      "critical": true,
+      "applies_to": ["retry", "all"]
     }
   ],
   "lessons": {
@@ -78,6 +83,7 @@
         "templates/.gitignore 含 'CLAUDE.md', 同时屏蔽 templates/CLAUDE.md 自己进 cogmap repo"
       ],
       "count": 1,
+      "fix_pattern": "把 templates 内的 .gitignore 改名 _gitignore, 在 init.mjs 的 FILENAME_REWRITES 表里 copy 时改回 .gitignore",
       "lessons": [
         "templates 内的配置文件必须改名后缀 (_gitignore) 避免对 cogmap repo 自身生效",
         "init.mjs 用 FILENAME_REWRITES 表在 copy 时改回 .gitignore"
@@ -88,6 +94,7 @@
         "顶层 .gitignore 写 'CLAUDE.md' 没有 / 前缀, glob 全局匹配, 把 packages/cli/templates/CLAUDE.md 也屏蔽了"
       ],
       "count": 1,
+      "fix_pattern": "把无前缀 pattern (CLAUDE.md) 改成 anchor 到仓库根 (/CLAUDE.md). 想只屏蔽仓库根的文件就必须 / 前缀.",
       "lessons": [
         ".gitignore 想只匹配仓库根的文件, 必须用 / 前缀: /CLAUDE.md",
         "无 / 的 pattern 是全局 glob, 会匹配任何子目录同名文件"
@@ -98,6 +105,7 @@
         "schema 写死 iterations 每个 value 必须 array, 真实数据有 object 结构, validate 全部失败"
       ],
       "count": 1,
+      "fix_pattern": "schema 设计预留逃生口: additionalProperties: true 兼容数据多样. 涉及 R2 grep 验证 — 改 schema 前必须 grep 现有数据形态.",
       "lessons": [
         "schema 设计预留逃生口: additionalProperties: true 兼容数据多样",
         "v0.1.1 修复, 真实 INTEL 现在 validate 通过"
@@ -186,7 +194,9 @@
       "category": "robustness",
       "title": "L3 失败自修复 retry agent — subagent 失败 ≥3 次自动降级 / 报警",
       "priority": "p1",
-      "status": "proposed"
+      "status": "done",
+      "completed_at": "2026-04-28",
+      "notes": "按老罗修正的方法论实现: 模式驱动 (基于过去成功) + 可视化 (retry_log 留痕) + 迭代 (越用越准). cogmap-core 加 matchFailurePrecedent + logRetry + countAttemptsForSignature. INTEL schema 加 retry_log + bugs.fix_pattern. R14 强制规范: 没命中先例不准 retry, 严禁凭空发明. SKILL templates/.claude/skills/retry-on-failure/ + 5 个 smoke test (18/18 全过). cogmap 自身 INTEL dogfood: R14 + 3 个 bug 加 fix_pattern + retry_log: []."
     },
     {
       "id": "Q3",
@@ -269,6 +279,8 @@
     { "ts": "2026-04-27T23:30:00Z", "kind": "ci", "summary": "publish.yml 加 mcp-v* tag handler, 三包 tag-trigger publish 全打通 + Q1 状态校正 (proposed → in_progress)" },
     { "ts": "2026-04-27T23:50:00Z", "kind": "release", "summary": "v0.1.2 三包 publish: cogmap-core@0.1.2 + create-cogmap@0.1.2 + cogmap-mcp@0.1.0(首发). npx cogmap-mcp 启动验证 ok." },
     { "ts": "2026-04-28T00:30:00Z", "kind": "feature", "summary": "Q5+Q7+Q8 done: rules applies_to 8 条 dogfood 填充 + release-it@20 三包 monorepo 集成 + Q7 docs 三件套状态校正. Q4 标 blocked (lessons tags 需 consumer 重构, 留待下轮)." },
-    { "ts": "2026-04-28T01:30:00Z", "kind": "feature", "summary": "Q3+Q6 done: visual-baseline example (pixelmatch demo 实跑通过) + searchByTask slim/limit/fields 三选项 (cogmap-core + cogmap-mcp 同步, 13/13 测试)." }
-  ]
+    { "ts": "2026-04-28T01:30:00Z", "kind": "feature", "summary": "Q3+Q6 done: visual-baseline example (pixelmatch demo 实跑通过) + searchByTask slim/limit/fields 三选项 (cogmap-core + cogmap-mcp 同步, 13/13 测试)." },
+    { "ts": "2026-04-28T03:00:00Z", "kind": "feature", "summary": "Q2 done: L3 模式驱动 retry agent (老罗修正后的方法论 — 基于过去成功的标准, 不是统一规则). Schema 加 retry_log + bugs.fix_pattern. 新增 cogmap-core/match-failure-precedent + log-retry. R14 强制规范, retry-on-failure SKILL 模板. cogmap-mcp 真机验证 (Cursor/Claude Code) 通过 npx cogmap-mcp 启动 ok, MCP server 接入 Claude Code 端到端调用工具成功." }
+  ],
+  "retry_log": []
 }

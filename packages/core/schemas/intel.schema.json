@@ -45,7 +45,11 @@
         "properties": {
           "types": { "type": "array", "items": { "type": "string" } },
           "count": { "type": "integer", "minimum": 0 },
-          "lessons": { "type": "array", "items": { "type": "string" } }
+          "lessons": { "type": "array", "items": { "type": "string" } },
+          "fix_pattern": {
+            "type": "string",
+            "description": "(L3 retry) 修复方式的可复用模板, 模式驱动 retry 命中后会按这个修. 比 lessons 更显式, 是'可执行的修复指令', 不是'反思'."
+          }
         },
         "additionalProperties": true
       }
@@ -88,6 +92,51 @@
           "kind": { "type": "string" },
           "summary": { "type": "string" }
         }
+      }
+    },
+    "retry_log": {
+      "type": "array",
+      "description": "(L3 失败自修复) 留痕日志. subagent 失败 → 查 INTEL 命中先例 → 套用修复 → 结果记录在这. 模式驱动 retry 的可视化窗口 — 用户能审 AI 这次为什么这么修.",
+      "items": {
+        "type": "object",
+        "required": ["ts", "failure_signature", "outcome"],
+        "properties": {
+          "ts": { "type": "string", "description": "ISO8601 时间戳" },
+          "failure_signature": {
+            "type": "object",
+            "description": "失败签名 — 用于以后匹配同类失败",
+            "properties": {
+              "error_type": { "type": "string", "description": "错误大类, 如 'TypeError' / 'TestFailure' / 'BuildError'" },
+              "keywords": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "从错误文本提取的关键词, 用于 Jaccard 相似度匹配"
+              },
+              "raw_excerpt": { "type": "string", "description": "原始错误摘要, ≤200 字" }
+            }
+          },
+          "matched_precedent": {
+            "type": ["object", "null"],
+            "description": "命中的过去先例. null = 未命中, 必须升级用户",
+            "properties": {
+              "kind": { "type": "string", "enum": ["bug", "lesson", "retry_log"] },
+              "id": { "type": "string", "description": "bug 节点 id 或 lesson topic 或 retry_log 里某条 ts" },
+              "fix_pattern": { "type": "string", "description": "命中时套用的修复模板" },
+              "score": { "type": "number", "description": "匹配置信度 0-1" }
+            }
+          },
+          "fix_applied": {
+            "type": "string",
+            "description": "本次实际尝试的修复方式 (可能与 fix_pattern 不完全一致, AI 会做适配)"
+          },
+          "outcome": {
+            "type": "string",
+            "enum": ["success", "failure", "escalated"],
+            "description": "success=修好了 / failure=改了但还是失败 / escalated=未命中先例直接升级"
+          },
+          "attempt_n": { "type": "integer", "minimum": 1, "description": "本次失败的第几次重试" }
+        },
+        "additionalProperties": true
       }
     }
   },
