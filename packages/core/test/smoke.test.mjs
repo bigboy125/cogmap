@@ -79,16 +79,25 @@ test('match-recipe scoring: triggers + confidence weighting', async () => {
       { id: 'preview-audit', triggers: ['巡检', 'E2E'], confidence: 'low — 新增' }
     ]
   }
+  // 强制 HTTPS 模式让 fetch mock 生效 (cwd 可能有 .cogmap.json 指向 file://)
+  const origCwd = process.cwd()
+  const origBase = process.env.COGMAP_API_BASE
+  process.chdir('/tmp')
+  process.env.COGMAP_API_BASE = 'https://test.example.com'
   const originalFetch = globalThis.fetch
   globalThis.fetch = async () => ({ ok: true, json: async () => mockIntel })
   try {
-    const { matchRecipe } = await import('../src/match-recipe.mjs')
+    // dynamic import w/ cache bust
+    const { matchRecipe } = await import('../src/match-recipe.mjs?t=' + Date.now())
     const m = await matchRecipe('日历有新会议号 Webinar ID')
     assert.equal(m.id, 'add-calendar-format')
     assert.ok(m.score >= 2.3, `score should be >=2.3 (2 triggers + 0.3 high), got ${m.score}`)
     assert.equal(m.skill_path, '.claude/skills/add-calendar-format/SKILL.md')
   } finally {
     globalThis.fetch = originalFetch
+    process.chdir(origCwd)
+    if (origBase) process.env.COGMAP_API_BASE = origBase
+    else delete process.env.COGMAP_API_BASE
   }
 })
 
@@ -108,15 +117,22 @@ test('check-bug-history matches keyword across nodes', async () => {
       }
     }
   }
+  const origCwd = process.cwd()
+  const origBase = process.env.COGMAP_API_BASE
+  process.chdir('/tmp')
+  process.env.COGMAP_API_BASE = 'https://test.example.com'
   const originalFetch = globalThis.fetch
   globalThis.fetch = async () => ({ ok: true, json: async () => mockIntel })
   try {
-    const { checkBugHistory } = await import('../src/check-bug-history.mjs')
+    const { checkBugHistory } = await import('../src/check-bug-history.mjs?t=' + Date.now())
     const hits = await checkBugHistory('passcode')
     assert.equal(hits.length, 1)
     assert.equal(hits[0].nodeId, 'backend-calendar')
   } finally {
     globalThis.fetch = originalFetch
+    process.chdir(origCwd)
+    if (origBase) process.env.COGMAP_API_BASE = origBase
+    else delete process.env.COGMAP_API_BASE
   }
 })
 
