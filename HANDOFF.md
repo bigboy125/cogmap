@@ -37,6 +37,8 @@ npx cogmap doctor
 | 5 分钟上手 | [docs/QUICKSTART.md](./docs/QUICKSTART.md) |
 | 写自己的 SKILL.md | [docs/WRITING-SKILLS.md](./docs/WRITING-SKILLS.md) |
 | 自部署 INTEL 后端 | [docs/HOSTING-INTEL.md](./docs/HOSTING-INTEL.md) |
+| **可视化界面** | [cogmap-UI](https://github.com/bigboy125/cogmap-ui)（sibling 项目）→ 本地 `../cogmap-UI/` |
+| 在线 Demo | https://map.rigzin.top/cogmap/（主） / https://bigboy125.github.io/cogmap-ui/（备） |
 | 完整方法论（杂志风 HTML） | `archive/explainers/cogmap-methodology.html`（本地，未推 GitHub） |
 | 上次会话交接 | `archive/handoffs/cogmap-handoff-2026-04-27.md`（本地） |
 

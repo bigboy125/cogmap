@@ -286,14 +286,25 @@
       "三层架构: 项目记忆 (HTTPS API) + 全链路 Agent (SKILL.md) + 跨项目复用 (npm 包 + CLI)",
       "AI agnostic — 不锁定 Claude, 任何 AI 工具都能消费同一份 INTEL"
     ],
-    "current_state": "v0.1.3 三包 publish 完成 + 真机验证 ok. 路线图 11/11 全 done. cogmap 项目当前完整可用 + 上线.",
+    "current_state": "v0.1.3 三包 publish 完成 + 真机验证 ok. 路线图 11/11 全 done. cogmap-UI sibling 项目 (Vue SPA) 也已上线 https://map.rigzin.top/cogmap/. 整个 cogmap 生态完整可用.",
     "github": "https://github.com/bigboy125/cogmap",
     "npm": [
       "cogmap-core@0.1.3 (上线)",
       "create-cogmap@0.1.3 (上线)",
       "cogmap-mcp@0.1.1 (上线)"
     ],
-    "next_session_first_action": "cd /Users/laoluo/老罗的项目/cogmap && npm test (23/23 通过) + git status (clean). 想发新版用 npm run release:core/cli/mcp (release-it). 想用新工具在 Claude Code 里 Cmd+Q 重启拉新 cogmap-mcp@0.1.1, 多一个 cogmap_search_lessons_by_tags 工具."
+    "sibling_projects": {
+      "cogmap-UI": {
+        "purpose": "把 cogmap 方法论 + INTEL 数据可视化",
+        "local_path": "/Users/laoluo/老罗的项目/cogmap-UI/",
+        "github": "https://github.com/bigboy125/cogmap-ui",
+        "deploy_primary": "https://map.rigzin.top/cogmap/",
+        "deploy_secondary": "https://bigboy125.github.io/cogmap-ui/",
+        "tech": "Vue 3 + Vite + Pinia + Vue Router + Tailwind CDN, 9 页面 + 4 张方法论 SVG 图",
+        "data_source": "../cogmap/INTEL.json (本项目) sync 到它的 public/intel.json"
+      }
+    },
+    "next_session_first_action": "cd /Users/laoluo/老罗的项目/cogmap && npm test (23/23 通过) + git status (clean). 想发新版用 npm run release:core/cli/mcp (release-it). 想用新工具在 Claude Code 里 Cmd+Q 重启拉新 cogmap-mcp@0.1.1, 多一个 cogmap_search_lessons_by_tags 工具. 看可视化: 浏览器开 https://map.rigzin.top/cogmap/."
   },
   "app_meta": {
     "name": "CogMap",
@@ -316,7 +327,8 @@
     { "ts": "2026-04-28T05:00:00Z", "kind": "feature", "summary": "Q4 done: lessons 双形态 (string | {text,tags}) — schema oneOf 兼容 + lesson-utils helper + cogmap-mcp 新工具 cogmap_search_lessons_by_tags + cogmap 17 条 lesson dogfood 加 tags + 5 smoke (23/23). 真机测 search_lessons_by_tags(['release']) 准确返回 4 条 publish-flow lessons. 路线图 11/11 项收官 (除 blocked 外全 done)." },
     { "ts": "2026-04-28T06:00:00Z", "kind": "release", "summary": "v0.1.3 bump + tag 推 GitHub (core-v0.1.3 / cli-v0.1.3 / mcp-v0.1.1). 用户配置 NPM_TOKEN GH secret 用 GH Actions 自动 publish, 但 3 个 CI run 全失败 (npm 404 = token 权限不足). 待用户修 token. 代码侧已 ready, 等 publish 即可." },
     { "ts": "2026-04-28T07:00:00Z", "kind": "release", "summary": "v0.1.3 三包手动 publish 成功: cogmap-core@0.1.3 + create-cogmap@0.1.3 + cogmap-mcp@0.1.1. npx cogmap-mcp@0.1.1 启动验证 ok (R8 闭环). 路线图 11/11 全 done + 三包齐发. cogmap 项目正式 done done." },
-    { "ts": "2026-04-28T08:00:00Z", "kind": "lessons", "summary": "R20 沉淀闭环: 本会话 14 条新 lesson 入 INTEL — publish-flow +3 (ENOWORKSPACES / 404=权限 / GH Action token 配置), 4 个新 topic (token-security 3 / methodology-design 4 / schema-evolution 4 / session-collaboration 3). 用 Q4 {text,tags} 格式 dogfood. Total 17→31 lessons / 5→9 topics. cogmap_search_lessons_by_tags(['methodology']) 真机返 5 条命中, 沉淀闭环跑通." }
+    { "ts": "2026-04-28T08:00:00Z", "kind": "lessons", "summary": "R20 沉淀闭环: 本会话 14 条新 lesson 入 INTEL — publish-flow +3 (ENOWORKSPACES / 404=权限 / GH Action token 配置), 4 个新 topic (token-security 3 / methodology-design 4 / schema-evolution 4 / session-collaboration 3). 用 Q4 {text,tags} 格式 dogfood. Total 17→31 lessons / 5→9 topics. cogmap_search_lessons_by_tags(['methodology']) 真机返 5 条命中, 沉淀闭环跑通." },
+    { "ts": "2026-04-28T09:00:00Z", "kind": "ecosystem", "summary": "cogmap-UI sibling 项目从零建成 + 上线: 1601 行代码 (Vue 3 + Vite + Tailwind, 9 页面, 4 张方法论 SVG 图). 部署 https://map.rigzin.top/cogmap/ (主, Vercel CLI 直推) + https://bigboy125.github.io/cogmap-ui/ (备, GH Pages). 应用 SKILL 五步流程 (SPEC.md 即第 1-3 步). 自身 INTEL 沉淀 19 条 lesson / 7 topics." }
   ],
   "retry_log": []
 }
